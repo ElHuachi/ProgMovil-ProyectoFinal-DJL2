@@ -47,8 +47,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    val nota : Nota = NotasInfo.notas[0]
-                    NotaCard(nota)
+                    NotasList(notas = NotasInfo.notas)
                 }
             }
         }
@@ -127,7 +126,6 @@ fun BarraBusqueda(
 @Composable
 fun GreetingPreview() {
     ProyectoFinalDJLTheme(useDarkTheme=false) {
-        val nota : Nota = NotasInfo.notas[0]
-        NotaCard(nota)
+        NotasList(notas = NotasInfo.notas)
     }
 }
