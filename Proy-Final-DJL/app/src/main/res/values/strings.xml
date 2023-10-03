@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">Proyecto-Final-DJL</string>
+    <string name="notas">Notas</string>
+    <string name="tareas">Tareas</string>
 </resources>
