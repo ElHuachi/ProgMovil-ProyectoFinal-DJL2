@@ -1,8 +1,10 @@
 package com.daviddj.proyecto_final_djl
 
+import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -23,9 +25,12 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.daviddj.proyecto_final_djl.model.Nota
+import com.daviddj.proyecto_final_djl.model.NotasInfo
 import com.daviddj.proyecto_final_djl.ui.theme.ProyectoFinalDJLTheme
 
 class MainActivity : ComponentActivity() {
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
@@ -35,7 +40,8 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    AppTopBar()
+                    val nota : Nota = NotasInfo.notas[0]
+                    NotaCard(nota)
                 }
             }
         }
@@ -80,10 +86,12 @@ fun AppTopBar(modifier: Modifier =  Modifier){
     )
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Preview(showBackground = true)
 @Composable
 fun GreetingPreview() {
     ProyectoFinalDJLTheme(useDarkTheme=false) {
-        AppTopBar()
+        val nota : Nota = NotasInfo.notas[0]
+        NotaCard(nota)
     }
 }
