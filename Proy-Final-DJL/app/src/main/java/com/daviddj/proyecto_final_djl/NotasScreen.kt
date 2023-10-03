@@ -43,3 +43,4 @@ fun NotaCard(nota: Nota, modifier: Modifier = Modifier){
         }
     }
 }
+
