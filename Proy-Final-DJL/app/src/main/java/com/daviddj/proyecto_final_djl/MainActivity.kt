@@ -48,6 +48,8 @@ import androidx.compose.ui.unit.dp
 import com.daviddj.proyecto_final_djl.model.Multimedia
 import com.daviddj.proyecto_final_djl.model.Nota
 import com.daviddj.proyecto_final_djl.model.NotasInfo
+import com.daviddj.proyecto_final_djl.model.Tarea
+import com.daviddj.proyecto_final_djl.model.TareasInfo
 import com.daviddj.proyecto_final_djl.ui.theme.ProyectoFinalDJLTheme
 
 class MainActivity : ComponentActivity() {
@@ -203,6 +205,17 @@ fun TarjetaMultimedia(multimedia: Multimedia, modifier: Modifier = Modifier){
 @Composable
 fun GreetingPreview() {
     ProyectoFinalDJLTheme(useDarkTheme=false) {
-        NotasList(notas = NotasInfo.notas)
+        //val nota : Nota = NotasInfo.notas[0]
+        //EditorNotas(nota)
+        //TareasList(tareas = TareasInfo.tareas)
+        //NotasList(notas = NotasInfo.notas)
+
+        TareasList(tareas = TareasInfo.tareas)
+        val tarea:Tarea = TareasInfo.tareas[1]
+        EditorTareas(tarea)
+
+
+
+
     }
 }
