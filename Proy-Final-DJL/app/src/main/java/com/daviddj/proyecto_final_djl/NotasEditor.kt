@@ -45,11 +45,6 @@ fun EditorNotas(nota : Nota, modifier: Modifier = Modifier){
         )
         Spacer(modifier = Modifier.height(16.dp))
         Text(
-            text = nota.name,
-            style = MaterialTheme.typography.headlineLarge
-        )
-        Spacer(modifier = Modifier.height(16.dp))
-        Text(
             text = nota.fecha.toString(),
             style = MaterialTheme.typography.bodySmall
         )
