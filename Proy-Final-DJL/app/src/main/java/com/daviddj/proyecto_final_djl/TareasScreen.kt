@@ -65,8 +65,60 @@ fun TareaCard(tarea: Tarea, modifier: Modifier){
                 Checkbox(checked = checkedState.value,
                     onCheckedChange = { newValue -> checkedState.value = newValue },
                     colors = CheckboxDefaults.colors(checkedColor = MaterialTheme.colorScheme.primary,
-                        uncheckedColor = Color.Gray))
+                        uncheckedColor = Color.Gray
+                    )
+                )
             }
         }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun TareasList(
+    modifier: Modifier = Modifier,
+    tareas: List<Tarea>,
+    contentPadding: PaddingValues = PaddingValues(0.dp)
+){
+    var busquedaInput by remember { mutableStateOf("") }
+
+    Scaffold(
+        topBar = {
+            Column {
+                AppTopBar()
+                Spacer(modifier = Modifier.height(15.dp))
+                Row (modifier = Modifier.align(Alignment.CenterHorizontally)){
+                    BarraBusqueda(
+                        label = R.string.busqueda,
+                        leadingIcon = R.drawable.lupa,
+                        value = busquedaInput,
+                        onValueChanged = { busquedaInput = it },
+                        modifier = Modifier
+                            .padding(bottom = 32.dp)
+                            .fillMaxWidth(.925f),
+                        keyboardOptions = KeyboardOptions.Default.copy(
+                            keyboardType = KeyboardType.Text,
+                            imeAction = ImeAction.Done
+                        )
+                    )
+                }
+            }
+        },
+        floatingActionButton = {
+            FloatingActionButton(onClick = {}) {
+                Icon(Icons.Default.Add, contentDescription = "Agregar")
+            }
+        },
+        floatingActionButtonPosition = FabPosition.End
+    ){ it ->
+        LazyColumn(contentPadding = it) {
+            itemsIndexed(tareas){ index, tarea ->
+                TareaCard(
+                    tarea = tarea,
+                    modifier = Modifier.padding(vertical = 8.dp, horizontal = 16.dp)
+                )
+            }
+        }
+
     }
 }
