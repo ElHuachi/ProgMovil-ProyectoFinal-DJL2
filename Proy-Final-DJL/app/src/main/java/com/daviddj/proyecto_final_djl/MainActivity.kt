@@ -45,12 +45,14 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.viewModelFactory
 import com.daviddj.proyecto_final_djl.model.Multimedia
 import com.daviddj.proyecto_final_djl.model.Nota
 import com.daviddj.proyecto_final_djl.model.NotasInfo
 import com.daviddj.proyecto_final_djl.model.Tarea
 import com.daviddj.proyecto_final_djl.model.TareasInfo
 import com.daviddj.proyecto_final_djl.ui.theme.ProyectoFinalDJLTheme
+import com.daviddj.proyecto_final_djl.viewModel.MainViewModel
 
 class MainActivity : ComponentActivity() {
     @RequiresApi(Build.VERSION_CODES.O)
@@ -213,9 +215,5 @@ fun GreetingPreview() {
         TareasList(tareas = TareasInfo.tareas)
         val tarea:Tarea = TareasInfo.tareas[1]
         EditorTareas(tarea)
-
-
-
-
     }
 }

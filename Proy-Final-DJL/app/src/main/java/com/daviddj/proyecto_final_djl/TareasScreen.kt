@@ -25,6 +25,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -35,10 +36,13 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.daviddj.proyecto_final_djl.model.Tarea
+import com.daviddj.proyecto_final_djl.viewModel.MainViewModel
 
 @Composable
-fun TareaCard(tarea: Tarea, modifier: Modifier){
+fun TareaCard(tarea: Tarea, modifier: Modifier, appViewModel : MainViewModel = viewModel()){
+    val appUiState by appViewModel.uiState.collectAsState()
     val checkedState = remember { mutableStateOf(false) }
     Card(
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),

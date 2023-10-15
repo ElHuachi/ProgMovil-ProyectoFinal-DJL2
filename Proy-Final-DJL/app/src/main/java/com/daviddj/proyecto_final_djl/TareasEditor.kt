@@ -21,16 +21,21 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.daviddj.proyecto_final_djl.model.Tarea
+import com.daviddj.proyecto_final_djl.viewModel.MainViewModel
 
 @Composable
-fun EditorTareas(tarea: Tarea,modifier: Modifier = Modifier) {
+fun EditorTareas(tarea: Tarea,modifier: Modifier = Modifier, appViewModel : MainViewModel = viewModel()) {
+    val appUiState by appViewModel.uiState.collectAsState()
     var checkedState = remember { mutableStateOf(false) }
     Column(
         modifier = Modifier

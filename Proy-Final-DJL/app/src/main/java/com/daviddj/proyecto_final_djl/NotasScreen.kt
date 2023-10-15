@@ -34,7 +34,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.daviddj.proyecto_final_djl.model.Nota
+import com.daviddj.proyecto_final_djl.viewModel.MainViewModel
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 
 @Composable
 fun NotaCard(nota: Nota, modifier: Modifier = Modifier){
@@ -71,8 +75,10 @@ fun NotaCard(nota: Nota, modifier: Modifier = Modifier){
 fun NotasList(
     modifier: Modifier = Modifier,
     notas: List<Nota>,
-    contentPadding: PaddingValues = PaddingValues(0.dp)
+    contentPadding: PaddingValues = PaddingValues(0.dp),
+    appViewModel : MainViewModel = viewModel()
 ){
+    val appUiState by appViewModel.uiState.collectAsState()
     var busquedaInput by remember { mutableStateOf("") }
 
     Scaffold(
