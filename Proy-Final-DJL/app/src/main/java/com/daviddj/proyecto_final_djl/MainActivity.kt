@@ -65,7 +65,8 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    NotasList(notas = NotasInfo.notas)
+                    val tarea:Tarea = TareasInfo.tareas[1]
+                    EditorTareas(tarea)
                 }
             }
         }
@@ -212,7 +213,6 @@ fun GreetingPreview() {
         //TareasList(tareas = TareasInfo.tareas)
         //NotasList(notas = NotasInfo.notas)
 
-        TareasList(tareas = TareasInfo.tareas)
         val tarea:Tarea = TareasInfo.tareas[1]
         EditorTareas(tarea)
     }
