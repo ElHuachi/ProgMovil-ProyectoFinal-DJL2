@@ -46,6 +46,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.viewModelFactory
+import androidx.navigation.NavController
 import com.daviddj.proyecto_final_djl.model.Multimedia
 import com.daviddj.proyecto_final_djl.model.Nota
 import com.daviddj.proyecto_final_djl.model.NotasInfo
@@ -65,8 +66,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    val tarea:Tarea = TareasInfo.tareas[1]
-                    EditorTareas(tarea)
+
                 }
             }
         }
@@ -75,11 +75,11 @@ class MainActivity : ComponentActivity() {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AppTopBar(modifier: Modifier =  Modifier){
+fun AppTopBar(modifier: Modifier =  Modifier, navController: NavController){
     CenterAlignedTopAppBar(
         title = {
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Button(onClick = { /*TODO*/ }) {
+                Button(onClick = { navController.navigate(Routes.NotasScreen.route) }) {
                     Image(
                         modifier = Modifier
                             .size(40.dp)
@@ -93,7 +93,7 @@ fun AppTopBar(modifier: Modifier =  Modifier){
                     )
                 }
                 Spacer(modifier = Modifier.width(10.dp))
-                Button(onClick = { /*TODO*/ }) {
+                Button(onClick = { navController.navigate(Routes.TareasScreen.route) }) {
                     Image(
                         modifier = Modifier
                             .size(40.dp)
@@ -203,6 +203,7 @@ fun TarjetaMultimedia(multimedia: Multimedia, modifier: Modifier = Modifier){
     }
 }
 
+/*
 @RequiresApi(Build.VERSION_CODES.O)
 @Preview(showBackground = true)
 @Composable
@@ -217,3 +218,4 @@ fun GreetingPreview() {
         EditorTareas(tarea)
     }
 }
+*/

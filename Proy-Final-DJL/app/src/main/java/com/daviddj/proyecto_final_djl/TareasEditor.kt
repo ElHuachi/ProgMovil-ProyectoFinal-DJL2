@@ -39,12 +39,13 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavHostController
 import com.daviddj.proyecto_final_djl.model.Tarea
 import com.daviddj.proyecto_final_djl.viewModel.MainViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun EditorTareas(tarea: Tarea,modifier: Modifier = Modifier, appViewModel : MainViewModel = viewModel()) {
+fun EditorTareas(tarea: Tarea,modifier: Modifier = Modifier, appViewModel : MainViewModel = viewModel(), navController: NavHostController) {
     val appUiState by appViewModel.uiState.collectAsState()
     var checkedState = remember { mutableStateOf(false) }
     var text by remember { mutableStateOf(TextFieldValue()) }
@@ -58,7 +59,7 @@ fun EditorTareas(tarea: Tarea,modifier: Modifier = Modifier, appViewModel : Main
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ){
-            IconButton(onClick = { /*TODO*/ }) {
+            IconButton(onClick = { navController.navigate(Routes.TareasScreen.route) }) {
                 Icon(
                     imageVector = Icons.Filled.KeyboardArrowLeft,
                     contentDescription = "Regresar",

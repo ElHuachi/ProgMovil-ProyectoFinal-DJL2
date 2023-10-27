@@ -37,6 +37,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavHostController
 import com.daviddj.proyecto_final_djl.model.Tarea
 import com.daviddj.proyecto_final_djl.viewModel.MainViewModel
 
@@ -82,14 +83,15 @@ fun TareaCard(tarea: Tarea, modifier: Modifier, appViewModel : MainViewModel = v
 fun TareasList(
     modifier: Modifier = Modifier,
     tareas: List<Tarea>,
-    contentPadding: PaddingValues = PaddingValues(0.dp)
+    contentPadding: PaddingValues = PaddingValues(0.dp),
+    navController: NavHostController
 ){
     var busquedaInput by remember { mutableStateOf("") }
 
     Scaffold(
         topBar = {
             Column {
-                AppTopBar()
+                AppTopBar(navController = navController)
                 Spacer(modifier = Modifier.height(15.dp))
                 Row (modifier = Modifier.align(Alignment.CenterHorizontally)){
                     BarraBusqueda(
@@ -109,7 +111,7 @@ fun TareasList(
             }
         },
         floatingActionButton = {
-            FloatingActionButton(onClick = {}) {
+            FloatingActionButton(onClick = {navController.navigate(Routes.TareasEditor.route)}) {
                 Icon(Icons.Default.Add, contentDescription = "Agregar")
             }
         },

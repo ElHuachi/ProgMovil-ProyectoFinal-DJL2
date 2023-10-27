@@ -37,12 +37,13 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavHostController
 import com.daviddj.proyecto_final_djl.model.Nota
 import com.daviddj.proyecto_final_djl.viewModel.MainViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun EditorNotas(nota : Nota, modifier: Modifier = Modifier, appViewModel : MainViewModel = viewModel()){
+fun EditorNotas(nota : Nota, modifier: Modifier = Modifier, appViewModel : MainViewModel = viewModel(), navController: NavHostController){
     val appUiState by appViewModel.uiState.collectAsState()
     var text by remember { mutableStateOf(TextFieldValue()) }
     Column (
@@ -51,7 +52,7 @@ fun EditorNotas(nota : Nota, modifier: Modifier = Modifier, appViewModel : MainV
             .padding(16.dp)
     ) {
         Row (horizontalArrangement = Arrangement.Start) {
-            IconButton(onClick = { /*TODO*/ }) {
+            IconButton(onClick = { navController.navigate(Routes.NotasScreen.route) }) {
                 Icon(imageVector = Icons.Filled.KeyboardArrowLeft, contentDescription = "Regresar",
                     modifier = Modifier
                         .size(32.dp)

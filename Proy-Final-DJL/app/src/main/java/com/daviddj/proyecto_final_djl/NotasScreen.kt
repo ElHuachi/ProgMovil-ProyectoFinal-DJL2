@@ -39,6 +39,7 @@ import com.daviddj.proyecto_final_djl.model.Nota
 import com.daviddj.proyecto_final_djl.viewModel.MainViewModel
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.navigation.NavHostController
 
 @Composable
 fun NotaCard(nota: Nota, modifier: Modifier = Modifier){
@@ -76,7 +77,8 @@ fun NotasList(
     modifier: Modifier = Modifier,
     notas: List<Nota>,
     contentPadding: PaddingValues = PaddingValues(0.dp),
-    appViewModel : MainViewModel = viewModel()
+    appViewModel : MainViewModel = viewModel(),
+    navController: NavHostController
 ){
     val appUiState by appViewModel.uiState.collectAsState()
     var busquedaInput by remember { mutableStateOf("") }
@@ -84,7 +86,7 @@ fun NotasList(
     Scaffold(
         topBar = {
             Column {
-                AppTopBar()
+                AppTopBar(navController = navController)
                 Spacer(modifier = Modifier.height(15.dp))
                 Row (modifier = Modifier.align(Alignment.CenterHorizontally)){
                     BarraBusqueda(
@@ -104,7 +106,7 @@ fun NotasList(
             }
         },
         floatingActionButton = {
-            FloatingActionButton(onClick = { /* acción al hacer clic */ }) {
+            FloatingActionButton(onClick = { navController.navigate(Routes.NotasEditor.route) }) {
                 Icon(Icons.Default.Add, contentDescription = "Agregar")
             }
         },
