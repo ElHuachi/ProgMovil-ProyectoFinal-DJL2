@@ -47,6 +47,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.viewModelFactory
 import androidx.navigation.NavController
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 import com.daviddj.proyecto_final_djl.model.Multimedia
 import com.daviddj.proyecto_final_djl.model.Nota
 import com.daviddj.proyecto_final_djl.model.NotasInfo
@@ -66,7 +69,23 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-
+                    val navigationcontroller = rememberNavController()
+                    NavHost(navController = navigationcontroller, startDestination = Routes.NotasScreen.route){
+                        composable(Routes.NotasScreen.route){
+                            NotasList(notas = NotasInfo.notas, navController = navigationcontroller)
+                        }
+                        composable(Routes.NotasEditor.route){
+                            val nota : Nota = NotasInfo.notas[0]
+                            EditorNotas(nota,navController = navigationcontroller)
+                        }
+                        composable(Routes.TareasScreen.route){
+                            TareasList(tareas = TareasInfo.tareas, navController = navigationcontroller)
+                        }
+                        composable(Routes.TareasEditor.route){
+                            val tarea:Tarea = TareasInfo.tareas[1]
+                            EditorTareas(tarea, navController = navigationcontroller)
+                        }
+                    }
                 }
             }
         }
