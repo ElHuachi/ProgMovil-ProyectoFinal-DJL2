@@ -85,7 +85,7 @@ fun TareasList(
     tareas: List<Tarea>,
     contentPadding: PaddingValues = PaddingValues(0.dp),
     navController: NavHostController,
-    appViewModel : TareasScreenViewModel = viewModel(),
+    appViewModel : TareasScreenViewModel = viewModel()
 ){
     var busquedaInput by remember { mutableStateOf("") }
 

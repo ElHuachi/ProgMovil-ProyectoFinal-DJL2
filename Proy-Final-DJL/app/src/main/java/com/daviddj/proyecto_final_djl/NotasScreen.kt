@@ -39,6 +39,7 @@ import com.daviddj.proyecto_final_djl.model.Nota
 import com.daviddj.proyecto_final_djl.viewModel.NotasEditorViewModel
 import androidx.compose.runtime.collectAsState
 import androidx.navigation.NavHostController
+import com.daviddj.proyecto_final_djl.viewModel.NotasScreenViewModel
 
 @Composable
 fun NotaCard(nota: Nota, modifier: Modifier = Modifier){
@@ -76,12 +77,9 @@ fun NotasList(
     modifier: Modifier = Modifier,
     notas: List<Nota>,
     contentPadding: PaddingValues = PaddingValues(0.dp),
-    appViewModel : NotasEditorViewModel = viewModel(),
+    appViewModel : NotasScreenViewModel = viewModel(),
     navController: NavHostController
 ){
-    val appUiState by appViewModel.uiState.collectAsState()
-    var busquedaInput by remember { mutableStateOf("") }
-
     Scaffold(
         topBar = {
             Column {
@@ -91,8 +89,8 @@ fun NotasList(
                     BarraBusqueda(
                         label = R.string.busqueda,
                         leadingIcon = R.drawable.lupa,
-                        value = busquedaInput,
-                        onValueChanged = { busquedaInput = it },
+                        value = appViewModel.busquedaInput.value,
+                        onValueChanged = { appViewModel.busquedaInput.value = it },
                         modifier = Modifier
                             .padding(bottom = 32.dp)
                             .fillMaxWidth(.925f),
