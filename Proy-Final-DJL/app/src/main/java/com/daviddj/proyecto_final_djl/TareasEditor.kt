@@ -49,7 +49,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.daviddj.proyecto_final_djl.model.Tarea
-import com.daviddj.proyecto_final_djl.viewModel.MainViewModel
+import com.daviddj.proyecto_final_djl.viewModel.NotasEditorViewModel
 import java.util.Calendar
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -57,7 +57,7 @@ import java.util.Calendar
 fun EditorTareas(
     tarea: Tarea,
     modifier: Modifier = Modifier,
-    appViewModel : MainViewModel = viewModel(),
+    appViewModel : NotasEditorViewModel = viewModel(),
     navController: NavHostController
 ) {
     val appUiState by appViewModel.uiState.collectAsState()

@@ -36,9 +36,8 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.daviddj.proyecto_final_djl.model.Nota
-import com.daviddj.proyecto_final_djl.viewModel.MainViewModel
+import com.daviddj.proyecto_final_djl.viewModel.NotasEditorViewModel
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.navigation.NavHostController
 
 @Composable
@@ -77,7 +76,7 @@ fun NotasList(
     modifier: Modifier = Modifier,
     notas: List<Nota>,
     contentPadding: PaddingValues = PaddingValues(0.dp),
-    appViewModel : MainViewModel = viewModel(),
+    appViewModel : NotasEditorViewModel = viewModel(),
     navController: NavHostController
 ){
     val appUiState by appViewModel.uiState.collectAsState()

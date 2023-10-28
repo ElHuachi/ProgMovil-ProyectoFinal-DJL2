@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowLeft
@@ -42,11 +41,15 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.daviddj.proyecto_final_djl.model.Nota
-import com.daviddj.proyecto_final_djl.viewModel.MainViewModel
+import com.daviddj.proyecto_final_djl.viewModel.NotasEditorViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun EditorNotas(nota : Nota, modifier: Modifier = Modifier, appViewModel : MainViewModel = viewModel(), navController: NavHostController){
+fun EditorNotas(nota : Nota,
+                modifier: Modifier = Modifier,
+                appViewModel : NotasEditorViewModel = viewModel(),
+                navController: NavHostController
+){
     val appUiState by appViewModel.uiState.collectAsState()
     var text by remember { mutableStateOf(TextFieldValue()) }
     var titulo by remember { mutableStateOf("") }
@@ -66,8 +69,8 @@ fun EditorNotas(nota : Nota, modifier: Modifier = Modifier, appViewModel : MainV
         }
         BarraTitulo(
             label = R.string.titulo,
-            value = titulo,
-            onValueChanged = { titulo = it },
+            value = appViewModel.titulo.value,
+            onValueChanged = { appViewModel.titulo.value = it },
             modifier = Modifier
                 .fillMaxWidth(1f),
             keyboardOptions = KeyboardOptions.Default.copy(
@@ -82,10 +85,8 @@ fun EditorNotas(nota : Nota, modifier: Modifier = Modifier, appViewModel : MainV
         )
         Spacer(modifier = Modifier.height(16.dp))
         TextField(
-            value = text,
-            onValueChange = {
-                text = it
-            },
+            value = appViewModel.text.value,
+            onValueChange = { appViewModel.text.value = it },
             singleLine = false,
             modifier = Modifier
                 .background(Color.White)

@@ -39,10 +39,10 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.daviddj.proyecto_final_djl.model.Tarea
-import com.daviddj.proyecto_final_djl.viewModel.MainViewModel
+import com.daviddj.proyecto_final_djl.viewModel.NotasEditorViewModel
 
 @Composable
-fun TareaCard(tarea: Tarea, modifier: Modifier, appViewModel : MainViewModel = viewModel()){
+fun TareaCard(tarea: Tarea, modifier: Modifier, appViewModel : NotasEditorViewModel = viewModel()){
     val appUiState by appViewModel.uiState.collectAsState()
     val checkedState = remember { mutableStateOf(false) }
     Card(
