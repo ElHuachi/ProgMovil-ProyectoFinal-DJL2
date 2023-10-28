@@ -40,10 +40,10 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.daviddj.proyecto_final_djl.model.Tarea
 import com.daviddj.proyecto_final_djl.viewModel.NotasEditorViewModel
+import com.daviddj.proyecto_final_djl.viewModel.TareasScreenViewModel
 
 @Composable
-fun TareaCard(tarea: Tarea, modifier: Modifier, appViewModel : NotasEditorViewModel = viewModel()){
-    val appUiState by appViewModel.uiState.collectAsState()
+fun TareaCard(tarea: Tarea, modifier: Modifier){
     val checkedState = remember { mutableStateOf(false) }
     Card(
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
@@ -84,7 +84,8 @@ fun TareasList(
     modifier: Modifier = Modifier,
     tareas: List<Tarea>,
     contentPadding: PaddingValues = PaddingValues(0.dp),
-    navController: NavHostController
+    navController: NavHostController,
+    appViewModel : TareasScreenViewModel = viewModel(),
 ){
     var busquedaInput by remember { mutableStateOf("") }
 
@@ -97,8 +98,8 @@ fun TareasList(
                     BarraBusqueda(
                         label = R.string.busqueda,
                         leadingIcon = R.drawable.lupa,
-                        value = busquedaInput,
-                        onValueChanged = { busquedaInput = it },
+                        value = appViewModel.busquedaInput.value,
+                        onValueChanged = { appViewModel.busquedaInput.value = it },
                         modifier = Modifier
                             .padding(bottom = 32.dp)
                             .fillMaxWidth(.925f),
