@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowLeft
 import androidx.compose.material3.Button
@@ -33,6 +34,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -46,6 +49,7 @@ import com.daviddj.proyecto_final_djl.viewModel.MainViewModel
 fun EditorNotas(nota : Nota, modifier: Modifier = Modifier, appViewModel : MainViewModel = viewModel(), navController: NavHostController){
     val appUiState by appViewModel.uiState.collectAsState()
     var text by remember { mutableStateOf(TextFieldValue()) }
+    var titulo by remember { mutableStateOf("") }
     Column (
         modifier= Modifier
             .fillMaxSize()
@@ -60,9 +64,16 @@ fun EditorNotas(nota : Nota, modifier: Modifier = Modifier, appViewModel : MainV
                 )
             }
         }
-        Text(
-            text = nota.name,
-            style = MaterialTheme.typography.headlineLarge
+        BarraTitulo(
+            label = R.string.titulo,
+            value = titulo,
+            onValueChanged = { titulo = it },
+            modifier = Modifier
+                .fillMaxWidth(1f),
+            keyboardOptions = KeyboardOptions.Default.copy(
+                keyboardType = KeyboardType.Text,
+                imeAction = ImeAction.Done
+            )
         )
         Spacer(modifier = Modifier.height(16.dp))
         Text(

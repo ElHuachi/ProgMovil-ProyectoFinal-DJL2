@@ -1,9 +1,5 @@
 package com.daviddj.proyecto_final_djl
 
-import android.app.DatePickerDialog
-import android.app.LocaleConfig
-import android.app.TimePickerDialog
-import android.content.Context
 import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -12,7 +8,6 @@ import androidx.annotation.DrawableRes
 import androidx.annotation.RequiresApi
 import androidx.annotation.StringRes
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -26,8 +21,6 @@ import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
@@ -55,6 +48,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
@@ -161,6 +155,27 @@ fun BarraBusqueda(
                 modifier = Modifier.size(32.dp)
             )
         },
+        singleLine = true,
+        modifier = modifier
+            .width(5.dp)
+            .clip(RoundedCornerShape(10.dp)),
+        onValueChange = onValueChanged,
+        label = { Text(stringResource(label)) },
+        keyboardOptions = keyboardOptions,
+    )
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun BarraTitulo(
+    @StringRes label: Int,
+    keyboardOptions: KeyboardOptions,
+    value: String,
+    onValueChanged: (String) -> Unit,
+    modifier: Modifier
+) {
+    TextField(
+        value = value,
         singleLine = true,
         modifier = modifier
             .width(5.dp)

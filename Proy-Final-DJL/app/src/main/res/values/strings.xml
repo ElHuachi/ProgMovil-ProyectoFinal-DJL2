@@ -3,4 +3,5 @@
     <string name="notas">Notas</string>
     <string name="tareas">Tareas</string>
     <string name="busqueda">Buscar...</string>
+    <string name="titulo">Título</string>
 </resources>
