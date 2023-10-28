@@ -45,14 +45,13 @@ import com.daviddj.proyecto_final_djl.viewModel.NotasEditorViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun EditorNotas(nota : Nota,
-                modifier: Modifier = Modifier,
-                appViewModel : NotasEditorViewModel = viewModel(),
-                navController: NavHostController
+fun EditorNotas(
+    nota : Nota,
+    modifier: Modifier = Modifier,
+    appViewModel : NotasEditorViewModel = viewModel(),
+    navController: NavHostController
 ){
     val appUiState by appViewModel.uiState.collectAsState()
-    var text by remember { mutableStateOf(TextFieldValue()) }
-    var titulo by remember { mutableStateOf("") }
     Column (
         modifier= Modifier
             .fillMaxSize()
