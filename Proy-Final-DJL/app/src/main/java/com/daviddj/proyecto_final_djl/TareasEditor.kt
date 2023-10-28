@@ -1,8 +1,11 @@
 package com.daviddj.proyecto_final_djl
 
+import android.app.DatePickerDialog
+import android.app.TimePickerDialog
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -29,10 +32,12 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.TextFieldValue
@@ -42,10 +47,16 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.daviddj.proyecto_final_djl.model.Tarea
 import com.daviddj.proyecto_final_djl.viewModel.MainViewModel
+import java.util.Calendar
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun EditorTareas(tarea: Tarea,modifier: Modifier = Modifier, appViewModel : MainViewModel = viewModel(), navController: NavHostController) {
+fun EditorTareas(
+    tarea: Tarea,
+    modifier: Modifier = Modifier,
+    appViewModel : MainViewModel = viewModel(),
+    navController: NavHostController
+) {
     val appUiState by appViewModel.uiState.collectAsState()
     var checkedState = remember { mutableStateOf(false) }
     var text by remember { mutableStateOf(TextFieldValue()) }
@@ -69,24 +80,9 @@ fun EditorTareas(tarea: Tarea,modifier: Modifier = Modifier, appViewModel : Main
                 )
             }
             Spacer(modifier = Modifier.width(40.dp))
-            IconButton(onClick = { /*TODO*/ }) {
-                Icon(
-                    imageVector = Icons.Filled.Notifications,
-                    contentDescription = "Recordatorios",
-                    modifier = Modifier
-                        .size(32.dp)
-                        .padding(0.dp)
-                )
-            }
-            IconButton(onClick = { /*TODO*/ }) {
-                Icon(
-                    imageVector = Icons.Filled.DateRange,
-                    contentDescription = "Recordatorios",
-                    modifier = Modifier
-                        .size(32.dp)
-                        .padding(0.dp)
-                )
-            }
+            TimePicker()
+            Spacer(modifier = Modifier.width(10.dp))
+            DatePicker()
             CheckboxWithText(
                 text = "Completado",
                 isChecked = checkedState,
@@ -152,4 +148,59 @@ fun EditorTareas(tarea: Tarea,modifier: Modifier = Modifier, appViewModel : Main
             }
         }
     }
+}
+
+@Composable
+fun DatePicker(){
+    var fecha by rememberSaveable { mutableStateOf("")}
+    val anio:Int
+    val mes:Int
+    val dia:Int
+    val mCalendar: Calendar = Calendar.getInstance()
+    anio=mCalendar.get(Calendar.YEAR)
+    mes=mCalendar.get(Calendar.MONTH)
+    dia=mCalendar.get(Calendar.DAY_OF_MONTH)
+
+    val mDatePickerDialog = DatePickerDialog(
+        LocalContext.current,
+        { Datepicker, anio:Int, mes:Int, dia:Int->
+            fecha = "$dia/$mes/$anio"
+        },anio,mes,dia
+    )
+    Icon(
+        imageVector = Icons.Filled.DateRange,
+        contentDescription = "Recordatorios",
+        modifier = Modifier
+            .size(32.dp)
+            .padding(0.dp)
+            .clickable {
+                mDatePickerDialog.show()
+            }
+    )
+}
+
+@Composable
+fun TimePicker() {
+    val mCalendar: Calendar = Calendar.getInstance()
+    val hour = mCalendar[Calendar.HOUR_OF_DAY]
+    val minute = mCalendar[Calendar.MINUTE]
+
+    val time = remember { mutableStateOf("") }
+    val timePickerDialog = TimePickerDialog(
+        LocalContext.current,
+        { _, hour: Int, minute: Int ->
+            time.value = "$hour:$minute"
+        }, hour, minute, true
+    )
+
+    Icon(
+        imageVector = Icons.Filled.Notifications,
+        contentDescription = "Recordatorios",
+        modifier = Modifier
+            .size(32.dp)
+            .padding(0.dp)
+            .clickable {
+                timePickerDialog.show()
+            }
+    )
 }
