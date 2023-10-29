@@ -15,6 +15,7 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.outlined.Build
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -83,6 +84,7 @@ fun NotasList(
     Scaffold(
         topBar = {
             Column {
+                CustomTopAppBar("Notas")
                 AppTopBar(navController = navController)
                 Spacer(modifier = Modifier.height(15.dp))
                 Row (modifier = Modifier.align(Alignment.CenterHorizontally)){
