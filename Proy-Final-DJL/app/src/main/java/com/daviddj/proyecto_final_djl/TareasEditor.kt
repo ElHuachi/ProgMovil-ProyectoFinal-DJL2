@@ -2,6 +2,8 @@ package com.daviddj.proyecto_final_djl
 
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -29,6 +31,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -49,18 +52,24 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.daviddj.proyecto_final_djl.model.Tarea
+import com.daviddj.proyecto_final_djl.model.TareasInfo
 import com.daviddj.proyecto_final_djl.viewModel.NotasEditorViewModel
 import com.daviddj.proyecto_final_djl.viewModel.TareasEditorViewModel
 import java.util.Calendar
 
+@RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EditorTareas(
-    tarea: Tarea,
+    id: Int,
     modifier: Modifier = Modifier,
     appViewModel : TareasEditorViewModel = viewModel(),
     navController: NavHostController
 ) {
+    LaunchedEffect(id) {
+        appViewModel.loadTarea(id, TareasInfo.tareas)
+    }
+
     val appUiState by appViewModel.uiState.collectAsState()
     var checkedState = remember { mutableStateOf(false) }
     Column(
@@ -107,7 +116,7 @@ fun EditorTareas(
         )
         Spacer(modifier = Modifier.height(16.dp))
         Text(
-            text = tarea.fecha.toString(),
+            text = appViewModel.fecha.value.toString(),
             style = MaterialTheme.typography.bodySmall
         )
         Spacer(modifier = Modifier.height(16.dp))

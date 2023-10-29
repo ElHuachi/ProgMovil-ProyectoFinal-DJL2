@@ -1,5 +1,7 @@
 package com.daviddj.proyecto_final_djl
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -23,6 +25,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -41,16 +44,23 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.daviddj.proyecto_final_djl.model.Nota
+import com.daviddj.proyecto_final_djl.model.NotasInfo
+import com.daviddj.proyecto_final_djl.model.TareasInfo
 import com.daviddj.proyecto_final_djl.viewModel.NotasEditorViewModel
 
+@RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EditorNotas(
-    nota : Nota,
+    id: Int,
     modifier: Modifier = Modifier,
     appViewModel : NotasEditorViewModel = viewModel(),
     navController: NavHostController
 ){
+    LaunchedEffect(id) {
+        appViewModel.loadNota(id, NotasInfo.notas)
+    }
+
     val appUiState by appViewModel.uiState.collectAsState()
     Column (
         modifier= Modifier
@@ -79,7 +89,7 @@ fun EditorNotas(
         )
         Spacer(modifier = Modifier.height(16.dp))
         Text(
-            text = nota.fecha.toString(),
+            text = appViewModel.fecha.value.toString(),
             style = MaterialTheme.typography.bodySmall
         )
         Spacer(modifier = Modifier.height(16.dp))
