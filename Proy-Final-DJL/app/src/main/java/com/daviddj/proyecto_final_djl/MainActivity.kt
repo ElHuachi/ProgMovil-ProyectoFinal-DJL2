@@ -80,14 +80,12 @@ class MainActivity : ComponentActivity() {
                             NotasList(notas = NotasInfo.notas, navController = navigationcontroller)
                         }
                         composable(Routes.NotasEditor.route){
-                            val nota : Nota = NotasInfo.notas[0]
                             EditorNotas(0,navController = navigationcontroller)
                         }
                         composable(Routes.TareasScreen.route){
                             TareasList(tareas = TareasInfo.tareas, navController = navigationcontroller)
                         }
                         composable(Routes.TareasEditor.route){
-                            val tarea:Tarea = TareasInfo.tareas[1]
                             EditorTareas(0, navController = navigationcontroller)
                         }
                     }
