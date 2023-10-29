@@ -14,5 +14,4 @@ class NotasScreenViewModel: ViewModel()  {
     val uiState: StateFlow<AppUiState> = _uiState.asStateFlow()
 
     val busquedaInput = mutableStateOf("")
-    var ultimoBotonPresionado = mutableStateOf(0)
 }

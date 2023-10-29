@@ -21,6 +21,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DateRange
+import androidx.compose.material.icons.filled.Done
 import androidx.compose.material.icons.filled.KeyboardArrowLeft
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material3.Button
@@ -91,10 +92,17 @@ fun EditorTareas(
                         .padding(0.dp)
                 )
             }
-            Spacer(modifier = Modifier.width(40.dp))
+            Spacer(modifier = Modifier.width(35.dp))
             TimePicker()
             Spacer(modifier = Modifier.width(10.dp))
             DatePicker()
+            IconButton(onClick = { /*TODO*/ }) {
+                Icon(
+                    imageVector = Icons.Filled.Done,
+                    contentDescription = "Crear Recordatorio",
+                    modifier = Modifier.size(32.dp).padding(0.dp)
+                )
+            }
             CheckboxWithText(
                 text = "Completado",
                 isChecked = checkedState,
