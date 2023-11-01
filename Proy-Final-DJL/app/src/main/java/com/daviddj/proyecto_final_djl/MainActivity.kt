@@ -1,5 +1,6 @@
 package com.daviddj.proyecto_final_djl
 
+import android.content.res.Configuration
 import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -8,7 +9,6 @@ import androidx.annotation.DrawableRes
 import androidx.annotation.RequiresApi
 import androidx.annotation.StringRes
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -22,7 +22,6 @@ import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -36,39 +35,37 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
+import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
+import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.daviddj.proyecto_final_djl.model.Multimedia
-import com.daviddj.proyecto_final_djl.model.Nota
 import com.daviddj.proyecto_final_djl.model.NotasInfo
-import com.daviddj.proyecto_final_djl.model.Tarea
 import com.daviddj.proyecto_final_djl.model.TareasInfo
+import com.daviddj.proyecto_final_djl.ui.EditorNotas
+import com.daviddj.proyecto_final_djl.ui.EditorTareas
+import com.daviddj.proyecto_final_djl.ui.NotasList
+import com.daviddj.proyecto_final_djl.ui.Routes
+import com.daviddj.proyecto_final_djl.ui.TareasList
 import com.daviddj.proyecto_final_djl.ui.theme.ProyectoFinalDJLTheme
-import com.daviddj.proyecto_final_djl.viewModel.NotasScreenViewModel
-import java.util.Calendar
 
 class MainActivity : ComponentActivity() {
+    @OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -79,10 +76,11 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
+                    val windowSize = calculateWindowSizeClass(this)
                     val navigationcontroller = rememberNavController()
                     NavHost(navController = navigationcontroller, startDestination = Routes.NotasScreen.route){
                         composable(Routes.NotasScreen.route){
-                            NotasList(notas = NotasInfo.notas, navController = navigationcontroller)
+                            NotasList(notas = NotasInfo.notas, navController = navigationcontroller, windowSize = windowSize.widthSizeClass)
                         }
                         composable(Routes.NotasEditor.route){
                             EditorNotas(0,navController = navigationcontroller)
@@ -262,15 +260,32 @@ fun TarjetaMultimedia(multimedia: Multimedia, modifier: Modifier = Modifier){
 @RequiresApi(Build.VERSION_CODES.O)
 @Preview(showBackground = true)
 @Composable
-fun GreetingPreview() {
-    ProyectoFinalDJLTheme(useDarkTheme=false) {
-        //val nota : Nota = NotasInfo.notas[0]
-        //EditorNotas(nota)
-        //TareasList(tareas = TareasInfo.tareas)
-        //NotasList(notas = NotasInfo.notas)
-
-//        val tarea:Tarea = TareasInfo.tareas[1]
-//        EditorTareas(tarea)
+fun DefaultPreview() {
+    ProyectoFinalDJLTheme {
+        Surface {
+            NotasList(notas = NotasInfo.notas, navController = rememberNavController(), windowSize = WindowWidthSizeClass.Medium)
+        }
     }
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
+@Preview(showBackground = true, widthDp = 700)
+@Composable
+fun GreetingPreview() {
+    ProyectoFinalDJLTheme(useDarkTheme=false) {
+        Surface {
+            NotasList(notas = NotasInfo.notas, navController = rememberNavController(), windowSize = WindowWidthSizeClass.Medium)
+        }
+    }
+}
+
+@RequiresApi(Build.VERSION_CODES.O)
+@Preview(showBackground = true, widthDp = 1000)
+@Composable
+fun GreetingExpandedPreview() {
+    ProyectoFinalDJLTheme(useDarkTheme=false) {
+        Surface {
+            NotasList(notas = NotasInfo.notas, navController = rememberNavController(), windowSize = WindowWidthSizeClass.Expanded)
+        }
+    }
+}

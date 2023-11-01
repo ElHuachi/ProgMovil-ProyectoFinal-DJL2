@@ -13,5 +13,17 @@ class NotasScreenViewModel: ViewModel()  {
     private val _uiState = MutableStateFlow(AppUiState())
     val uiState: StateFlow<AppUiState> = _uiState.asStateFlow()
 
+    init {
+        initializeUIState()
+    }
+
+    private fun initializeUIState() {
+        AppUiState(
+            cantidadNotas = 0,
+            cantidadTareas = 0,
+            cantidadTareasComp = 0
+        )
+    }
+
     val busquedaInput = mutableStateOf("")
 }

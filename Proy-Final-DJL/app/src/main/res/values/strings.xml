@@ -1,5 +1,10 @@
 <resources>
     <string name="app_name">Proyecto-Final-DJL</string>
+    <string name="navigation_drawer">Navigation Drawer</string>
+    <string name="navigation_rail">Navigation Rail</string>
+    <string name="navigation_bottom">Navigation Bottom</string>
+    <string name="navigation_back">Atras</string>
+    <string name="details_screen">Detalles</string>
     <string name="notas">Notas</string>
     <string name="tareas">Tareas</string>
     <string name="busqueda">Buscar...</string>
