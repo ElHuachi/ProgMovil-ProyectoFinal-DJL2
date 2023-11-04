@@ -19,6 +19,7 @@ class TareasEditorViewModel: ViewModel() {
     val titulo = mutableStateOf("")
     @RequiresApi(Build.VERSION_CODES.O)
     val fecha = mutableStateOf(LocalDateTime.now())
+    var tareaCargada = false
 
     @RequiresApi(Build.VERSION_CODES.O)
     fun loadTarea(id: Int, tareas: List<Tarea>) {

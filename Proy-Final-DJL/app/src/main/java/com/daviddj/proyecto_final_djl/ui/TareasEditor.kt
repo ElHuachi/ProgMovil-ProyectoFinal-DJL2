@@ -54,6 +54,7 @@ import androidx.navigation.NavHostController
 import com.daviddj.proyecto_final_djl.BarraTitulo
 import com.daviddj.proyecto_final_djl.CheckboxWithText
 import com.daviddj.proyecto_final_djl.R
+import com.daviddj.proyecto_final_djl.model.NotasInfo
 import com.daviddj.proyecto_final_djl.model.TareasInfo
 import com.daviddj.proyecto_final_djl.viewModel.TareasEditorViewModel
 import java.util.Calendar
@@ -67,8 +68,12 @@ fun EditorTareas(
     appViewModel : TareasEditorViewModel = viewModel(),
     navController: NavHostController
 ) {
-    LaunchedEffect(id) {
-        appViewModel.loadTarea(id, TareasInfo.tareas)
+// Ejecuta la carga de la tarea solo si no se ha cargado previamente
+    if (!appViewModel.tareaCargada) {
+        LaunchedEffect(id) {
+            appViewModel.loadTarea(id, TareasInfo.tareas)
+            appViewModel.tareaCargada = true  // Marca la tarea como cargada
+        }
     }
 
     val appUiState by appViewModel.uiState.collectAsState()

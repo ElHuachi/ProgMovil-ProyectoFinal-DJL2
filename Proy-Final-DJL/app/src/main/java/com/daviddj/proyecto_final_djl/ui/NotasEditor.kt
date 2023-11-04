@@ -28,6 +28,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -53,9 +55,14 @@ fun EditorNotas(
     appViewModel : NotasEditorViewModel = viewModel(),
     navController: NavHostController
 ){
-    LaunchedEffect(id) {
-        appViewModel.loadNota(id, NotasInfo.notas)
+    // Ejecuta la carga de la nota solo si no se ha cargado previamente
+    if (!appViewModel.notaCargada) {
+        LaunchedEffect(id) {
+            appViewModel.loadNota(id, NotasInfo.notas)
+            appViewModel.notaCargada = true  // Marca la nota como cargada
+        }
     }
+
 
     val appUiState by appViewModel.uiState.collectAsState()
     Column (
