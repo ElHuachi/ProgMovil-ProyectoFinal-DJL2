@@ -63,6 +63,8 @@ import com.daviddj.proyecto_final_djl.ui.NotasList
 import com.daviddj.proyecto_final_djl.ui.Routes
 import com.daviddj.proyecto_final_djl.ui.TareasList
 import com.daviddj.proyecto_final_djl.ui.theme.ProyectoFinalDJLTheme
+import com.daviddj.proyecto_final_djl.viewModel.NotaDetails
+import com.daviddj.proyecto_final_djl.viewModel.TareaDetails
 
 class MainActivity : ComponentActivity() {
     @OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
@@ -83,13 +85,13 @@ class MainActivity : ComponentActivity() {
                             NotasList(notas = NotasInfo.notas, navController = navigationcontroller, windowSize = windowSize.widthSizeClass)
                         }
                         composable(Routes.NotasEditor.route){
-                            EditorNotas(0,navController = navigationcontroller)
+                            EditorNotas(navigateBack = { navigationcontroller.popBackStack()}, navController = navigationcontroller)
                         }
                         composable(Routes.TareasScreen.route){
                             TareasList(tareas = TareasInfo.tareas, navController = navigationcontroller)
                         }
                         composable(Routes.TareasEditor.route){
-                            EditorTareas(0, navController = navigationcontroller)
+                            EditorTareas(navigateBack = { navigationcontroller.popBackStack()}, navController = navigationcontroller, TareaDetails = TareaDetails())
                         }
                     }
                 }

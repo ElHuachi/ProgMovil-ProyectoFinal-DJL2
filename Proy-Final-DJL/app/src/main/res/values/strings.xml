@@ -9,4 +9,8 @@
     <string name="tareas">Tareas</string>
     <string name="busqueda">Buscar...</string>
     <string name="titulo">Título</string>
+    <string name="contenido">Contenido</string>
+    <string name="required_fields">Campos requeridos</string>
+    <string name="save_action">Guardar</string>
+
 </resources>

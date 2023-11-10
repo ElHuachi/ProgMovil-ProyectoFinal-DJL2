@@ -18,7 +18,9 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Done
@@ -29,6 +31,8 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
@@ -37,6 +41,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -44,6 +49,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
@@ -51,32 +57,34 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
+import com.daviddj.proyecto_final_djl.AppViewModelProvider
 import com.daviddj.proyecto_final_djl.BarraTitulo
 import com.daviddj.proyecto_final_djl.CheckboxWithText
 import com.daviddj.proyecto_final_djl.R
 import com.daviddj.proyecto_final_djl.model.NotasInfo
 import com.daviddj.proyecto_final_djl.model.TareasInfo
+import com.daviddj.proyecto_final_djl.viewModel.NotaDetails
+import com.daviddj.proyecto_final_djl.viewModel.NotaUiState
+import com.daviddj.proyecto_final_djl.viewModel.TareaDetails
+import com.daviddj.proyecto_final_djl.viewModel.TareaUiState
 import com.daviddj.proyecto_final_djl.viewModel.TareasEditorViewModel
+import kotlinx.coroutines.launch
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 import java.util.Calendar
 
 @RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EditorTareas(
-    id: Int,
+    navigateBack: () -> Unit,
     modifier: Modifier = Modifier,
-    appViewModel : TareasEditorViewModel = viewModel(),
-    navController: NavHostController
+    viewModel : TareasEditorViewModel = viewModel(factory = AppViewModelProvider.Factory),
+    navController: NavHostController,
+    TareaDetails: TareaDetails,
 ) {
-// Ejecuta la carga de la tarea solo si no se ha cargado previamente
-    if (!appViewModel.tareaCargada) {
-        LaunchedEffect(id) {
-            appViewModel.loadTarea(id, TareasInfo.tareas)
-            appViewModel.tareaCargada = true  // Marca la tarea como cargada
-        }
-    }
+    val coroutineScope = rememberCoroutineScope()
 
-    val appUiState by appViewModel.uiState.collectAsState()
     var checkedState = remember { mutableStateOf(false) }
     Column(
         modifier = Modifier
@@ -88,7 +96,9 @@ fun EditorTareas(
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ){
-            IconButton(onClick = { navController.navigate(Routes.TareasScreen.route) }) {
+            IconButton(onClick = {
+                navController.navigate(Routes.TareasScreen.route)
+            }) {
                 Icon(
                     imageVector = Icons.Filled.KeyboardArrowLeft,
                     contentDescription = "Regresar",
@@ -116,33 +126,19 @@ fun EditorTareas(
                     .padding(end = 8.dp)
             ) { var isChecked = it}
         }
-        BarraTitulo(
-            label = R.string.titulo,
-            value = appViewModel.titulo.value,
-            onValueChanged = { appViewModel.titulo.value = it },
+        TareaEntryBody(
+            tareaUiState = viewModel.tareaUiState,
+            onTareaValueChange = viewModel::updateUiState,
+            onSaveClick = {
+                coroutineScope.launch {
+                    viewModel.saveTarea()
+                    navigateBack()
+                }
+            },
             modifier = Modifier
-                .fillMaxWidth(1f),
-            keyboardOptions = KeyboardOptions.Default.copy(
-                keyboardType = KeyboardType.Text,
-                imeAction = ImeAction.Done
-            )
-        )
-        Spacer(modifier = Modifier.height(16.dp))
-        Text(
-            text = appViewModel.fecha.value.toString(),
-            style = MaterialTheme.typography.bodySmall
-        )
-        Spacer(modifier = Modifier.height(16.dp))
-        TextField(
-            value = appViewModel.text.value,
-            onValueChange = { appViewModel.text.value = it },
-            singleLine = false,
-            modifier = Modifier
-                .background(Color.White)
-                .border(0.dp, Color.White)
-                .fillMaxWidth(1f)
-                .align(Alignment.CenterHorizontally),
-            textStyle = TextStyle(fontSize = 20.sp, color = Color.Black)
+                .padding(5.dp)
+                .verticalScroll(rememberScrollState())
+                .fillMaxWidth()
         )
         Spacer(modifier = Modifier.weight(1f))
         Row(
@@ -179,6 +175,78 @@ fun EditorTareas(
         }
     }
 }
+
+@RequiresApi(Build.VERSION_CODES.O)
+@Composable
+fun TareaEntryBody(
+    tareaUiState: TareaUiState,
+    onTareaValueChange: (TareaDetails) -> Unit,
+    onSaveClick: () -> Unit,
+    modifier: Modifier = Modifier
+){
+    Column() {
+        TareaInputForm(
+            tareaDetails = tareaUiState.tareaDetails,
+            onValueChange = onTareaValueChange,
+            modifier = Modifier.fillMaxWidth()
+        )
+        Button(
+            onClick = onSaveClick,
+            enabled = tareaUiState.isEntryValid,
+            shape = MaterialTheme.shapes.small,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text(stringResource(R.string.save_action))
+        }
+    }
+}
+
+@RequiresApi(Build.VERSION_CODES.O)
+@Composable
+fun TareaInputForm(
+    tareaDetails: TareaDetails,
+    modifier: Modifier = Modifier,
+    onValueChange: (TareaDetails) -> Unit = {},
+    enabled: Boolean = true
+) {
+    Column(
+    ) {
+        OutlinedTextField(
+            value = tareaDetails.name,
+            onValueChange = { onValueChange(tareaDetails.copy(name = it)) },
+            label = { Text(stringResource(R.string.titulo)) },
+            colors = OutlinedTextFieldDefaults.colors(
+                focusedContainerColor = MaterialTheme.colorScheme.secondaryContainer,
+                unfocusedContainerColor = MaterialTheme.colorScheme.secondaryContainer,
+                disabledContainerColor = MaterialTheme.colorScheme.secondaryContainer,
+            ),
+            modifier = Modifier.fillMaxWidth(),
+            enabled = enabled,
+            singleLine = true
+        )
+        val currentDateTime = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"))
+        Text(
+            text = currentDateTime,
+            style = MaterialTheme.typography.bodySmall
+        )
+        OutlinedTextField(
+            value = tareaDetails.contenido,
+            onValueChange = { onValueChange(tareaDetails.copy(contenido = it)) },
+            label = { Text(stringResource(R.string.contenido)) },
+            colors = OutlinedTextFieldDefaults.colors(
+                focusedContainerColor = MaterialTheme.colorScheme.secondaryContainer,
+                unfocusedContainerColor = MaterialTheme.colorScheme.secondaryContainer,
+                disabledContainerColor = MaterialTheme.colorScheme.secondaryContainer,
+            ),
+            //leadingIcon = { Text(Currency.getInstance(Locale.getDefault()).symbol) },
+            modifier = Modifier.fillMaxWidth(),
+            enabled = enabled,
+            singleLine = false
+        )
+    }
+}
+
+
 
 @Composable
 fun DatePicker(){

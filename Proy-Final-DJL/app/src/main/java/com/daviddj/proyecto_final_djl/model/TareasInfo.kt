@@ -13,7 +13,7 @@ object TareasInfo {
             id = 1,
             name = "Tarea de ejemplo 1",
             description = "Descripción...",
-            fecha = LocalDateTime.now(),
+            fecha = "03/11/2023",
             isComplete = false,
             contenido = "Contenido de ejemplo para pruebas de funcionalidad"
         ),
@@ -21,7 +21,7 @@ object TareasInfo {
             id = 2,
             name = "Tarea de ejemplo 2",
             description = "Descripción...",
-            fecha = LocalDateTime.now(),
+            fecha = "03/11/2023",
             isComplete = false,
             contenido = ""
         ),
