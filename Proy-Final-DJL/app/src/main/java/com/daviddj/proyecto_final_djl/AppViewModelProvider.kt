@@ -28,7 +28,7 @@ object AppViewModelProvider{
         }
 
         initializer {
-            TareasScreenViewModel()
+            TareasScreenViewModel(notasApplication().container.tareasRepository)
         }
     }
 }
