@@ -2,6 +2,7 @@ package com.daviddj.proyecto_final_djl.ui
 
 import android.os.Build
 import androidx.annotation.RequiresApi
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -13,6 +14,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
@@ -200,3 +202,49 @@ private fun HomeBody(
 }
 
 
+@Composable
+private fun InventoryList(
+    itemList: List<Nota>, onItemClick: (Nota) -> Unit, modifier: Modifier = Modifier
+) {
+
+
+    LazyColumn(modifier = modifier) {
+
+        items(items = itemList, key = { it.id }) { item ->
+            InventoryItem(item = item,
+                modifier = Modifier
+                    .padding(dimensionResource(id = R.dimen.padding_small))
+                    .clickable { onItemClick(item) })
+        }
+    }
+}
+
+
+@Composable
+private fun InventoryItem(
+    item: Nota, modifier: Modifier = Modifier
+) {
+
+    Card(
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+        modifier = modifier,
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp)
+                .sizeIn(minHeight = 72.dp)
+        ) {
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    text = item.name,
+                    style = MaterialTheme.typography.titleLarge
+                )
+                Text(
+                    text = item.fecha.toString(),
+                    style = MaterialTheme.typography.bodyMedium
+                )
+            }
+        }
+    }
+}
