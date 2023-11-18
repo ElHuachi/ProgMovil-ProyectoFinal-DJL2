@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -130,16 +131,14 @@ fun TareasList(
             }
         },
         floatingActionButtonPosition = FabPosition.End
-    ){ it ->
-        LazyColumn(contentPadding = it) {
-            itemsIndexed(tareas){ index, tarea ->
-                TareaCard(
-                    tarea = tarea,
-                    modifier = Modifier.padding(vertical = 8.dp, horizontal = 16.dp)
-                )
-            }
-        }
-
+    ){ innerPadding ->
+        TareaBody(
+            itemList = homeUiState.itemList,
+            onItemClick = { } ,
+            modifier = modifier
+                .padding(innerPadding)
+                .fillMaxSize()
+        )
     }
 }
 
@@ -204,9 +203,6 @@ private fun InventoryItem(
             Column(modifier = Modifier.weight(1f)) {
                 Text(text = item.name,
                     style = MaterialTheme.typography.titleLarge
-                )
-                Text(text = item.contenido,
-                    style = MaterialTheme.typography.bodyMedium
                 )
                 Text(text = item.fecha.toString(),
                     style = MaterialTheme.typography.bodyMedium
