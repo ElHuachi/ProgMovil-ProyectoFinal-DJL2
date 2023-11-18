@@ -42,4 +42,8 @@
     <dimen name="detail_topbar_padding_bottom">24dp</dimen>
     <dimen name="detail_topbar_back_button_padding_horizontal">24dp</dimen>
 
+    <dimen name="padding_small">8dp</dimen>
+    <dimen name="padding_medium">16dp</dimen>
+    <dimen name="padding_large">20dp</dimen>
+    <dimen name="padding_extra_large">32dp</dimen>
 </resources>

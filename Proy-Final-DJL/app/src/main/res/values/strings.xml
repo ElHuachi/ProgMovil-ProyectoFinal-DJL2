@@ -12,5 +12,6 @@
     <string name="contenido">Contenido</string>
     <string name="required_fields">Campos requeridos</string>
     <string name="save_action">Guardar</string>
+    <string name="no_item_description">Oops!\nNo items in the inventory.\nTap + to add.</string>
 
 </resources>

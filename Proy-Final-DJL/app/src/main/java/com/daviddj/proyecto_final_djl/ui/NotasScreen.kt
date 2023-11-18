@@ -1,5 +1,7 @@
 package com.daviddj.proyecto_final_djl.ui
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -26,15 +28,21 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.dimensionResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.daviddj.proyecto_final_djl.model.Nota
 import androidx.navigation.NavHostController
 import com.daviddj.proyecto_final_djl.AppTopBar
+import com.daviddj.proyecto_final_djl.AppViewModelProvider
 import com.daviddj.proyecto_final_djl.BarraBusqueda
 import com.daviddj.proyecto_final_djl.CustomTopAppBar
 import com.daviddj.proyecto_final_djl.R
@@ -83,6 +91,7 @@ fun NotaCard(
     }
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun NotasList(
@@ -90,7 +99,7 @@ fun NotasList(
     windowSize: WindowWidthSizeClass,
     notas: List<Nota>,
     contentPadding: PaddingValues = PaddingValues(0.dp),
-    appViewModel : NotasScreenViewModel = viewModel(),
+    appViewModel : NotasScreenViewModel = viewModel(factory = AppViewModelProvider.Factory),
     navController: NavHostController
 ){
     val navigationType: NotasNavigationType
@@ -115,6 +124,7 @@ fun NotasList(
         }
     }
 
+    val homeUiState by appViewModel.notaUiState.collectAsState()
     Scaffold(
         topBar = {
             Column {
@@ -163,3 +173,30 @@ private data class NavigationItemContent(
     val icon: @Composable () -> Unit,
     val route: String
 )
+
+
+@Composable
+private fun HomeBody(
+    itemList: List<Nota>, onItemClick: (Int) -> Unit, modifier: Modifier = Modifier
+) {
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = modifier
+    ) {
+        if (itemList.isEmpty()) {
+            Text(
+                text = stringResource(R.string.no_item_description),
+                textAlign = TextAlign.Center,
+                style = MaterialTheme.typography.titleLarge
+            )
+        } else {
+            InventoryList(
+                itemList = itemList,
+                onItemClick = { onItemClick(it.id) },
+                modifier = Modifier.padding(horizontal = dimensionResource(id = R.dimen.padding_small))
+            )
+        }
+    }
+}
+
+
