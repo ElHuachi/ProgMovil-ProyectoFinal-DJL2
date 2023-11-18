@@ -24,7 +24,7 @@ object AppViewModelProvider{
         }
 
         initializer {
-            NotasScreenViewModel()
+            NotasScreenViewModel(notasApplication().container.notasRepository)
         }
 
         initializer {
