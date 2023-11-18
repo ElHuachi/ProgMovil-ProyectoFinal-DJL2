@@ -2,6 +2,7 @@ package com.daviddj.proyecto_final_djl.ui
 
 import android.os.Build
 import androidx.annotation.RequiresApi
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -11,6 +12,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
@@ -162,6 +164,62 @@ private fun TareaBody(
                 onItemClick = { onItemClick(it.id) },
                 modifier = Modifier.padding(horizontal = dimensionResource(id = R.dimen.padding_small))
             )
+        }
+    }
+}
+
+@Composable
+private fun InventoryList(
+    itemList: List<Tarea>, onItemClick: (Tarea) -> Unit, modifier: Modifier = Modifier
+) {
+
+
+    LazyColumn(modifier = modifier) {
+
+        items(items = itemList, key = { it.id }) { item ->
+            InventoryItem(item = item,
+                modifier = Modifier
+                    .padding(dimensionResource(id = R.dimen.padding_small))
+                    .clickable { onItemClick(item) })
+        }
+    }
+}
+
+
+@Composable
+private fun InventoryItem(
+    item: Tarea, modifier: Modifier = Modifier
+) {
+    val checkedState = remember { mutableStateOf(false) }
+    Card(
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+        modifier = modifier,
+    ){
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp)
+                .sizeIn(minHeight = 72.dp)
+        ) {
+            Column(modifier = Modifier.weight(1f)) {
+                Text(text = item.name,
+                    style = MaterialTheme.typography.titleLarge
+                )
+                Text(text = item.contenido,
+                    style = MaterialTheme.typography.bodyMedium
+                )
+                Text(text = item.fecha.toString(),
+                    style = MaterialTheme.typography.bodyMedium
+                )
+            }
+            Column(modifier=Modifier.padding(16.dp)) {
+                Checkbox(checked = checkedState.value,
+                    onCheckedChange = { newValue -> checkedState.value = newValue },
+                    colors = CheckboxDefaults.colors(checkedColor = MaterialTheme.colorScheme.primary,
+                        uncheckedColor = Color.Gray
+                    )
+                )
+            }
         }
     }
 }
