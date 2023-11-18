@@ -156,17 +156,14 @@ fun NotasList(
             }
         },
         floatingActionButtonPosition = FabPosition.End
-    ){ it ->
-        Box(modifier = Modifier.fillMaxSize()) {
-            LazyColumn(contentPadding = it) {
-                itemsIndexed(notas){index, nota ->
-                    NotaCard(
-                        nota = nota,
-                        modifier = Modifier.padding(vertical = 8.dp, horizontal = 16.dp)
-                    )
-                }
-            }
-        }
+    ){ innerPadding ->
+        HomeBody(
+            itemList = homeUiState.itemList,
+            onItemClick = { } ,
+            modifier = modifier
+                .padding(innerPadding)
+                .fillMaxSize()
+        )
     }
 }
 
