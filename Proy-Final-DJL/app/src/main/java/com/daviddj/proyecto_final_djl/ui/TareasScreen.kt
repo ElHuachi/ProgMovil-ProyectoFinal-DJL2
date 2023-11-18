@@ -1,5 +1,7 @@
 package com.daviddj.proyecto_final_djl.ui
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -25,6 +27,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -32,12 +35,16 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.dimensionResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.daviddj.proyecto_final_djl.AppTopBar
+import com.daviddj.proyecto_final_djl.AppViewModelProvider
 import com.daviddj.proyecto_final_djl.BarraBusqueda
 import com.daviddj.proyecto_final_djl.CustomTopAppBar
 import com.daviddj.proyecto_final_djl.R
@@ -80,6 +87,7 @@ fun TareaCard(tarea: Tarea, modifier: Modifier){
     }
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TareasList(
@@ -87,10 +95,10 @@ fun TareasList(
     tareas: List<Tarea>,
     contentPadding: PaddingValues = PaddingValues(0.dp),
     navController: NavHostController,
-    appViewModel : TareasScreenViewModel = viewModel()
+    appViewModel : TareasScreenViewModel = viewModel(factory = AppViewModelProvider.Factory)
 ){
     var busquedaInput by remember { mutableStateOf("") }
-
+    val homeUiState by appViewModel.tareaUiState.collectAsState()
     Scaffold(
         topBar = {
             Column {
@@ -130,5 +138,30 @@ fun TareasList(
             }
         }
 
+    }
+}
+
+
+@Composable
+private fun TareaBody(
+    itemList: List<Tarea>, onItemClick: (Int) -> Unit, modifier: Modifier = Modifier
+) {
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = modifier
+    ) {
+        if (itemList.isEmpty()) {
+            Text(
+                text = stringResource(R.string.no_item_description),
+                textAlign = TextAlign.Center,
+                style = MaterialTheme.typography.titleLarge
+            )
+        } else {
+            InventoryList(
+                itemList = itemList,
+                onItemClick = { onItemClick(it.id) },
+                modifier = Modifier.padding(horizontal = dimensionResource(id = R.dimen.padding_small))
+            )
+        }
     }
 }
