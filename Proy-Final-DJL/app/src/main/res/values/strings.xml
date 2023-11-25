@@ -14,6 +14,7 @@
     <string name="save_action">Guardar</string>
     <string name="no_item_description">Oops!\nNo items in the inventory.\nTap + to add.</string>
 
+    <string name="descripcion">Descripción</string>
     <string name="tarea_detail_title">Detalles de la tarea</string>
     <string name="tarea_entry_title">Añadir tarea</string>
     <string name="tarea_item_title">Editar tarea</string>
