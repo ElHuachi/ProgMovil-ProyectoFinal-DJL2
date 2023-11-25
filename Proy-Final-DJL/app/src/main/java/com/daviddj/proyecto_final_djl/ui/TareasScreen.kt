@@ -29,6 +29,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -96,6 +97,8 @@ fun TareaCard(tarea: Tarea, modifier: Modifier){
 fun TareasList(
     modifier: Modifier = Modifier,
     tareas: List<Tarea>,
+    windowSize: WindowWidthSizeClass,
+    navigateToItemUpdate: (Int) -> Unit,
     contentPadding: PaddingValues = PaddingValues(0.dp),
     navController: NavHostController,
     appViewModel : TareasScreenViewModel = viewModel(factory = AppViewModelProvider.Factory)
@@ -134,7 +137,7 @@ fun TareasList(
     ){ innerPadding ->
         TareaBody(
             itemList = homeUiState.itemList,
-            onItemClick = { } ,
+            onItemClick = navigateToItemUpdate ,
             modifier = modifier
                 .padding(innerPadding)
                 .fillMaxSize()
