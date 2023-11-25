@@ -57,6 +57,7 @@ import androidx.navigation.compose.rememberNavController
 import com.daviddj.proyecto_final_djl.model.Multimedia
 import com.daviddj.proyecto_final_djl.model.NotasInfo
 import com.daviddj.proyecto_final_djl.model.TareasInfo
+import com.daviddj.proyecto_final_djl.navigation.InventoryNavHost
 import com.daviddj.proyecto_final_djl.ui.EditorNotas
 import com.daviddj.proyecto_final_djl.ui.EditorTareas
 import com.daviddj.proyecto_final_djl.ui.NotasList
@@ -80,20 +81,8 @@ class MainActivity : ComponentActivity() {
                 ) {
                     val windowSize = calculateWindowSizeClass(this)
                     val navigationcontroller = rememberNavController()
-                    NavHost(navController = navigationcontroller, startDestination = Routes.NotasScreen.route){
-                        composable(Routes.NotasScreen.route){
-                            NotasList(notas = NotasInfo.notas, navController = navigationcontroller, windowSize = windowSize.widthSizeClass)
-                        }
-                        composable(Routes.NotasEditor.route){
-                            EditorNotas(navigateBack = { navigationcontroller.popBackStack()}, navController = navigationcontroller)
-                        }
-                        composable(Routes.TareasScreen.route){
-                            TareasList(tareas = TareasInfo.tareas, navController = navigationcontroller)
-                        }
-                        composable(Routes.TareasEditor.route){
-                            EditorTareas(navigateBack = { navigationcontroller.popBackStack()}, navController = navigationcontroller, TareaDetails = TareaDetails())
-                        }
-                    }
+
+                    InventoryNavHost(navController = navigationcontroller, windowSize = windowSize )
                 }
             }
         }
