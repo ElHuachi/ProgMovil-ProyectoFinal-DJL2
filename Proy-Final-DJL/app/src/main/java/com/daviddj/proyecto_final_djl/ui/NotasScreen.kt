@@ -100,6 +100,7 @@ fun NotasList(
     modifier: Modifier = Modifier,
     windowSize: WindowWidthSizeClass,
     notas: List<Nota>,
+    navigateToItemUpdate: (Int) -> Unit,
     contentPadding: PaddingValues = PaddingValues(0.dp),
     appViewModel : NotasScreenViewModel = viewModel(factory = AppViewModelProvider.Factory),
     navController: NavHostController
@@ -159,7 +160,7 @@ fun NotasList(
     ){ innerPadding ->
         HomeBody(
             itemList = homeUiState.itemList,
-            onItemClick = { } ,
+            onItemClick = navigateToItemUpdate ,
             modifier = modifier
                 .padding(innerPadding)
                 .fillMaxSize()
