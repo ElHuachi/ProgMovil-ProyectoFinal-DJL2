@@ -1,4 +1,4 @@
-package com.daviddj.proyecto_final_djl.notaDetails
+package com.daviddj.proyecto_final_djl.notasDetails
 
 import android.os.Build
 import androidx.annotation.RequiresApi

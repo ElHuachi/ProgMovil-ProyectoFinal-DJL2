@@ -1,4 +1,4 @@
-package com.daviddj.proyecto_final_djl.notaDetails
+package com.daviddj.proyecto_final_djl.notasDetails
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf

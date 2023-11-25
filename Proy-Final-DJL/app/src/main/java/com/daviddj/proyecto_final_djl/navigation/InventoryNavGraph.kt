@@ -16,8 +16,8 @@ import com.daviddj.proyecto_final_djl.tareasDetails.TareaEditDestination
 import com.daviddj.proyecto_final_djl.tareasDetails.TareaEntryDestination
 import com.daviddj.proyecto_final_djl.notaDetails.ItemDetailsDestination
 import com.daviddj.proyecto_final_djl.notaDetails.ItemDetailsScreen
-import com.daviddj.proyecto_final_djl.notaDetails.ItemEditDestination
-import com.daviddj.proyecto_final_djl.notaDetails.ItemEditScreen
+import com.daviddj.proyecto_final_djl.notasDetails.ItemEditDestination
+import com.daviddj.proyecto_final_djl.notasDetails.ItemEditScreen
 import com.daviddj.proyecto_final_djl.model.NotasInfo
 import com.daviddj.proyecto_final_djl.model.TareasInfo
 import com.daviddj.proyecto_final_djl.tareasDetails.TareaDetailsScreen
