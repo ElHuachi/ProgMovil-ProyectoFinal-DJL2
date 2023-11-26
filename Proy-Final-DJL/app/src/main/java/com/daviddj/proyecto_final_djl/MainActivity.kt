@@ -248,6 +248,7 @@ fun TarjetaMultimedia(multimedia: Multimedia, modifier: Modifier = Modifier){
     }
 }
 
+/*
 @RequiresApi(Build.VERSION_CODES.O)
 @Preview(showBackground = true)
 @Composable
@@ -278,5 +279,6 @@ fun GreetingExpandedPreview() {
         Surface {
             NotasList(notas = NotasInfo.notas, navController = rememberNavController(), windowSize = WindowWidthSizeClass.Expanded)
         }
-    }
+   }
 }
+ */
