@@ -57,7 +57,7 @@ class UpdateTareaViewModel(savedStateHandle: SavedStateHandle,
     fun updateUiState(itemDetails: TareaDetails, selectedDate: String) {
         itemDetails.fecha = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))
         itemDetails.fechaACompletar = selectedDate
-        val updatedNotaDetails = itemDetails.copy(fecha = itemDetails.fecha, fechaACompletar = itemDetails.fecha, imageUris = imageUris.joinToString(","), videoUris = videoUris.joinToString(","))
+        val updatedNotaDetails = itemDetails.copy(fecha = itemDetails.fecha, fechaACompletar = itemDetails.fechaACompletar, imageUris = imageUris.joinToString(","), videoUris = videoUris.joinToString(","))
         tareaUiState =
             TareaUiState(tareaDetails = updatedNotaDetails, isEntryValid = validateInput(itemDetails))
     }
