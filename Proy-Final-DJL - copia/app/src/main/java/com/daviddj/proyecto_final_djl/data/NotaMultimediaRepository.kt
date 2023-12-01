@@ -18,7 +18,7 @@ interface NotaMultimediaRepository {
     /**
      * Retrieve all the items from the given data source that matches with the [notaId].
      */
-    //fun getItemsStreamById(notaId: Int): Flow<List<NotaMultimedia>>
+    fun getItemsStreamById(notaId: Int): Flow<List<NotaMultimedia>>
 
     /**
      * Insert item in the data source

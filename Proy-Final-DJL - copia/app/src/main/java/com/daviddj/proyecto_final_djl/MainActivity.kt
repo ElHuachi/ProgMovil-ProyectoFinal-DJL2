@@ -51,6 +51,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.daviddj.proyecto_final_djl.ui.AlarmSchedulerImpl
 import com.daviddj.proyecto_final_djl.ui.AndroidAudioPlayer
 import com.daviddj.proyecto_final_djl.ui.AndroidAudioRecorder
 import com.daviddj.proyecto_final_djl.ui.EditorNotas
@@ -136,7 +137,8 @@ class MainActivity : ComponentActivity() {
                         ) {
                             UpdateTareaScreen(
                                 navigateBack = { navigationcontroller.popBackStack() },
-                                onNavigateUp = { navigationcontroller.navigateUp() }
+                                onNavigateUp = { navigationcontroller.navigateUp() },
+                                alarmScheduler = AlarmSchedulerImpl(applicationContext)
                             )
                         }
                         composable(
@@ -165,7 +167,8 @@ class MainActivity : ComponentActivity() {
                         }
                         composable(Routes.TareasEditor.route){
                             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                            EditorTareas(navigateBack = { navigationcontroller.popBackStack()}, navController = navigationcontroller)
+                            EditorTareas(navigateBack = { navigationcontroller.popBackStack()}, navController = navigationcontroller,
+                                alarmScheduler = AlarmSchedulerImpl(applicationContext))
                             }
                         }
                     }

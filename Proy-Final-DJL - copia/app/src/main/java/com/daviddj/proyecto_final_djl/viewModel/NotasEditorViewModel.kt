@@ -56,6 +56,8 @@ class NotasEditorViewModel(private val notasRepository: NotasRepository,
             name.isNotBlank()  && contenido.isNotBlank() && fecha.isNotBlank()
         }
     }
+
+
     suspend fun saveNota() {
         if (validateInput()) {
             // Guarda la nota y obtén el ID.
@@ -148,7 +150,7 @@ data class NotaMultimediaUiState(
 data class NotaMultimediaDetails(
     val id: Int = 0,
     val uri: String = "",
-    val descripcion: String = "",
+    var descripcion: String = "",
     var notaId: Int = 0
 )
 

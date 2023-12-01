@@ -5,11 +5,14 @@ import android.net.Uri
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.daviddj.proyecto_final_djl.data.NotaMultimediaRepository
 import com.daviddj.proyecto_final_djl.data.NotasRepository
+import com.daviddj.proyecto_final_djl.model.NotaMultimedia
 import com.daviddj.proyecto_final_djl.ui.NotaEditDestination
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
@@ -52,6 +55,8 @@ class UpdateNotaViewModel(
                 .toItemUiState(true)
         }
     }
+
+    val notaMultimedia: LiveData<List<NotaMultimedia>> = notasMultimediaRepository.getItemsStreamById(notaUiState.notaDetails.id).asLiveData()
 
     /**
      * Update the item in the [NotasRepository]'s data source

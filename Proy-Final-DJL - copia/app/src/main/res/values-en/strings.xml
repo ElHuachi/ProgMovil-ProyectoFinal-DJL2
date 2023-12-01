@@ -31,4 +31,8 @@
     <string name="completado">Completed</string>
     <string name="marcar">Complete</string>
     <string name="record_audio">Record audio</string>
+    <string name="reminder">Schedule</string>
+    <string name="cancelar">Cancel</string>
+    <string name="recordatorio">Reminder:</string>
+
 </resources>

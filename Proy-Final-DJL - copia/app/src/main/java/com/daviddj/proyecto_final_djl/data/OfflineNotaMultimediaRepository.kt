@@ -10,7 +10,7 @@ class OfflineNotaMultimediaRepository(private val notaMultimediaDAO: NotaMultime
 
     override fun getItemStream(id: Int): Flow<NotaMultimedia?> = notaMultimediaDAO.getItem(id)
 
-    //override fun getItemsStreamById(notId: Int): Flow<List<NotaMultimedia>> = notaMultimediaDAO.getAllById(notId)
+    override fun getItemsStreamById(notId: Int): Flow<List<NotaMultimedia>> = notaMultimediaDAO.getAllById(notId)
 
     override suspend fun insertItem(notaMultimedia: NotaMultimedia) = notaMultimediaDAO.insert(notaMultimedia)
 

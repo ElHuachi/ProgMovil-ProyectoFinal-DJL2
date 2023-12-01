@@ -57,6 +57,7 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.core.app.NotificationCompat
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -72,24 +73,27 @@ import com.daviddj.proyecto_final_djl.viewModel.TareaUiState
 import com.daviddj.proyecto_final_djl.viewModel.TareasEditorViewModel
 import kotlinx.coroutines.launch
 import java.time.LocalDateTime
+import java.time.ZoneId
 import java.time.format.DateTimeFormatter
+import java.time.format.TextStyle
 import java.util.Calendar
 import java.util.Locale
 import kotlin.reflect.KFunction2
 
 @RequiresApi(Build.VERSION_CODES.O)
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EditorTareas(
     navigateBack: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel : TareasEditorViewModel = viewModel(factory = AppViewModelProvider.Factory),
-    navController: NavHostController
+    navController: NavHostController,
+    alarmScheduler: AlarmScheduler
 ) {
     val coroutineScope = rememberCoroutineScope()
     var selectedDate by rememberSaveable { mutableStateOf("") }
     var selectedTime by rememberSaveable { mutableStateOf("") }
     var isDateSelected by rememberSaveable { mutableStateOf(false) }
+    var isTimeSelected by rememberSaveable { mutableStateOf(false) }
 
     var imageUris by remember { mutableStateOf(listOf<Uri>()) }
     var videoUris by remember { mutableStateOf(listOf<Uri>()) }
@@ -135,6 +139,16 @@ fun EditorTareas(
     val context = LocalContext.current
     //MULTIMEDIA
 
+    //ALARMA
+    var secondText by remember {
+        mutableStateOf("")
+    }
+    var messageText by remember {
+        mutableStateOf("")
+    }
+    var alarmItem : AlarmItem? = null
+    //ALARMA
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -159,23 +173,53 @@ fun EditorTareas(
             //Spacer(modifier = Modifier.width(10.dp))
             TimePicker(onTimeSelected = {
                 selectedTime = it
+                isTimeSelected = true
             },  isEnabled = isDateSelected)
             //Spacer(modifier = Modifier.width(10.dp))
             DatePicker(onDateSelected = {
                 selectedDate = it
                 isDateSelected = true
             })
-            //Establecer recordatorio
-//            IconButton(onClick = { /*TODO*/ }) {
-//                Icon(
-//                    imageVector = Icons.Filled.Done,
-//                    contentDescription = "Crear Recordatorio",
-//                    modifier = Modifier
-//                        .size(32.dp)
-//                        .padding(0.dp)
-//                )
-//            }
+        }
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.Center,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(text = stringResource(R.string.recordatorio),fontWeight = FontWeight.Bold)
+            Spacer(modifier = Modifier.width(8.dp))
+            Button(onClick = {
+                /*alarmItem =
+                   AlarmItem(
+                       alarmTime = LocalDateTime.now().plusSeconds(
+                           secondText.toLong()
+                       ),
+                       message = messageText
+                   )*/
+                alarmItem = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    AlarmItem(
+                        LocalDateTime.now().plusSeconds(1000),
+                        "",
+                        selectedDate,
+                        selectedTime
+                    )
+                } else {
+                    TODO("VERSION.SDK_INT < O")
+                }
+                alarmItem?.let(alarmScheduler::schedule)
+                secondText = ""
+                messageText = ""
 
+            }, enabled = isTimeSelected) {
+                Text(text = stringResource(R.string.reminder))
+            }
+            Spacer(modifier = Modifier.width(8.dp))
+            Button(onClick = {
+                alarmItem?.let(alarmScheduler::cancel)
+            }, enabled = isTimeSelected) {
+                Text(text = stringResource(R.string.cancelar))
+            }
+            Spacer(modifier = Modifier.width(8.dp))
         }
         TareaEntryBody(
             tareaUiState = viewModel.tareaUiState,
@@ -257,7 +301,10 @@ fun EditorTareas(
                     if (uri in imageUris) {
                         AsyncImage(
                             model = uri,
-                            modifier = Modifier.height(400.dp).width(300.dp).align(Alignment.Center),
+                            modifier = Modifier
+                                .height(400.dp)
+                                .width(300.dp)
+                                .align(Alignment.Center),
                             contentDescription = "Selected image",
                         )
                         Spacer(modifier = Modifier.height(16.dp))
@@ -265,7 +312,10 @@ fun EditorTareas(
                     } else if (uri in videoUris) {
                         VideoPlayer(
                             videoUri = uri,
-                            modifier = Modifier.height(400.dp).width(300.dp).align(Alignment.Center)
+                            modifier = Modifier
+                                .height(400.dp)
+                                .width(300.dp)
+                                .align(Alignment.Center)
                         )
                         Spacer(modifier = Modifier.height(16.dp))
                     }
@@ -424,4 +474,80 @@ fun TimePicker(onTimeSelected: (String) -> Unit, isEnabled: Boolean) {
     }
 }
 
+//NOTIFICACIONES
 
+class AlarmReceiverPerro : BroadcastReceiver() {
+    override fun onReceive(context: Context?, intent: Intent?) {
+        val message = intent?.getStringExtra("EXTRA_MESSAGE") ?: return
+        val channelId = "alarm_id"
+        context?.let { ctx ->
+            val notificationManager =
+                ctx.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            val builder = NotificationCompat.Builder(ctx, channelId)
+                .setSmallIcon(R.drawable.ic_launcher_foreground)
+                .setContentTitle("Aplicación de Notas")
+                .setContentText("Revisa tu app, tienes una tarea pendiente $message")
+                .setPriority(NotificationCompat.PRIORITY_HIGH)
+            notificationManager.notify(1, builder.build())
+        }
+
+    }
+}
+
+data class AlarmItem(
+    val alarmTime : LocalDateTime,
+    val message : String,
+    val date: String,
+    val time: String
+)
+
+interface AlarmScheduler {
+    fun schedule(alarmItem: AlarmItem)
+    fun cancel(alarmItem: AlarmItem)
+}
+
+class AlarmSchedulerImpl(
+    private val context: Context
+) : AlarmScheduler{
+
+    private val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+    //private val alarmManager = context.getSystemService(AlarmManager::class.java) as AlarmManager
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    override fun schedule(alarmItem: AlarmItem) {
+        val intent = Intent(context, AlarmReceiverPerro::class.java).apply {
+            putExtra("EXTRA_MESSAGE", alarmItem.message)
+        }
+
+        // Calculate milliseconds from selectedDate and selectedTime
+        val combinedDateTime = "${alarmItem.date} ${alarmItem.time}"
+        val dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
+        val dateTime = LocalDateTime.parse(combinedDateTime, dateTimeFormatter)
+        val milliseconds = dateTime.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
+
+        // Set the alarm with the calculated milliseconds
+        alarmManager.set(
+            AlarmManager.RTC_WAKEUP,
+            milliseconds,
+            PendingIntent.getBroadcast(
+                context,
+                alarmItem.hashCode(),
+                intent,
+                PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+            )
+        )
+        Log.e("Alarm", "Alarm set at $combinedDateTime")
+    }
+
+
+    override fun cancel(alarmItem: AlarmItem) {
+        alarmManager.cancel(
+            PendingIntent.getBroadcast(
+                context,
+                alarmItem.hashCode(),
+                Intent(context, AlarmReceiverPerro::class.java),
+                PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+            )
+        )
+    }
+}

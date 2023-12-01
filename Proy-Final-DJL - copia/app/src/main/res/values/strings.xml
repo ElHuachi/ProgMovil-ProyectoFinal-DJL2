@@ -30,5 +30,8 @@
     <string name="completado">Completada</string>
     <string name="marcar">Completado</string>
     <string name="record_audio">Grabar audio</string>
+    <string name="reminder">Agendar</string>
+    <string name="cancelar">Cancelar</string>
+    <string name="recordatorio">Recordatorio:</string>
 
 </resources>

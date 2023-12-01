@@ -26,6 +26,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
@@ -53,6 +54,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -254,19 +256,20 @@ fun EditorNotas(
                                         .fillMaxWidth()
                                 )
                             }
-                            TextField(
-                                value = viewModel.notaMultimediaUiState.notaMultimediaDetails.descripcion,
-                                onValueChange = { newDescription ->
-                                    viewModel.setNotaMultimediaUiState(
-                                        viewModel.notaMultimediaUiState.copy(
-                                            notaMultimediaDetails = viewModel.notaMultimediaUiState.notaMultimediaDetails.copy(descripcion = newDescription)
-                                        )
-                                    )
-                                },
-                                label = { Text("Descripción") },
-                                modifier = Modifier.fillMaxWidth()
-                            )
-
+                            // Obtén la descripción actual del ViewModel
+//                            TextField(
+//                                value = viewModel.notaMultimediaUiState.notaMultimediaDetails.descripcion,
+//                                onValueChange = { newDescription ->
+//                                    viewModel.setNotaMultimediaUiState(
+//                                        viewModel.notaMultimediaUiState.copy(
+//                                            notaMultimediaDetails = viewModel.notaMultimediaUiState.notaMultimediaDetails.copy(descripcion = newDescription)
+//                                        )
+//                                    )
+//                                },
+//                                label = { Text("Descripción") },
+//                                modifier = Modifier.fillMaxWidth(),
+//                                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done)
+//                            )
                             Button(
                                 onClick = {
                                     // Elimina la tarjeta y quita la imagen del arreglo.

@@ -48,6 +48,7 @@ import com.daviddj.proyecto_final_djl.R
 import com.daviddj.proyecto_final_djl.VideoPlayer
 import com.daviddj.proyecto_final_djl.viewModel.UpdateTareaViewModel
 import kotlinx.coroutines.launch
+import java.time.LocalDateTime
 
 object TareaEditDestination : NavigationDestination2 {
     override val route = "tarea_edit"
@@ -63,12 +64,14 @@ fun UpdateTareaScreen(
     navigateBack: () -> Unit,
     onNavigateUp: () -> Unit,
     modifier: Modifier = Modifier,
-    viewModel: UpdateTareaViewModel = viewModel(factory = AppViewModelProvider.Factory)
+    viewModel: UpdateTareaViewModel = viewModel(factory = AppViewModelProvider.Factory),
+    alarmScheduler: AlarmScheduler
 ) {
     val coroutineScope = rememberCoroutineScope()
     var selectedDate by rememberSaveable { mutableStateOf("") }
     var selectedTime by rememberSaveable { mutableStateOf("") }
     var isDateSelected by rememberSaveable { mutableStateOf(false) }
+    var isTimeSelected by rememberSaveable { mutableStateOf(false) }
 
     var imageUris by remember { mutableStateOf(listOf<Uri>()) }
     var videoUris by remember { mutableStateOf(listOf<Uri>()) }
@@ -115,6 +118,16 @@ fun UpdateTareaScreen(
     val context = LocalContext.current
     //MULTIMEDIA
 
+    //ALARMA
+    var secondText by remember {
+        mutableStateOf("")
+    }
+    var messageText by remember {
+        mutableStateOf("")
+    }
+    var alarmItem : AlarmItem? = null
+    //ALARMA
+
     Scaffold(
         topBar = {
             InventoryTopAppBar(
@@ -128,14 +141,55 @@ fun UpdateTareaScreen(
         Column(modifier = Modifier.padding(16.dp)) {
             Spacer(modifier = Modifier.height(55.dp))
             Row(modifier = Modifier.align(Alignment.CenterHorizontally)) {
+                TimePicker(onTimeSelected = {
+                    selectedTime = it
+                    isTimeSelected = true
+                }, isEnabled = isDateSelected)
+                Spacer(modifier = Modifier.width(10.dp))
                 DatePicker(onDateSelected = {
                     selectedDate = it
                     isDateSelected=true
                 })
-                Spacer(modifier = Modifier.width(10.dp))
-                TimePicker(onTimeSelected = {
-                    selectedTime = it
-                }, isEnabled = isDateSelected)
+            }
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(text = stringResource(R.string.recordatorio),fontWeight = FontWeight.Bold)
+                Spacer(modifier = Modifier.width(8.dp))
+                Button(onClick = {
+                    /*alarmItem =
+                       AlarmItem(
+                           alarmTime = LocalDateTime.now().plusSeconds(
+                               secondText.toLong()
+                           ),
+                           message = messageText
+                       )*/
+                    alarmItem = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                        AlarmItem(
+                            LocalDateTime.now().plusSeconds(1000),
+                            "",
+                            selectedDate,
+                            selectedTime
+                        )
+                    } else {
+                        TODO("VERSION.SDK_INT < O")
+                    }
+                    alarmItem?.let(alarmScheduler::schedule)
+                    secondText = ""
+                    messageText = ""
+
+                }, enabled = isTimeSelected) {
+                    Text(text = stringResource(R.string.reminder))
+                }
+                Spacer(modifier = Modifier.width(8.dp))
+                Button(onClick = {
+                    alarmItem?.let(alarmScheduler::cancel)
+                }, enabled = isTimeSelected) {
+                    Text(text = stringResource(R.string.cancelar))
+                }
+                Spacer(modifier = Modifier.width(8.dp))
             }
             TareaEntryBody(
                 tareaUiState = viewModel.tareaUiState,

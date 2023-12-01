@@ -1,5 +1,6 @@
 package com.daviddj.proyecto_final_djl.ui
 
+import android.annotation.SuppressLint
 import android.net.Uri
 import android.os.Build
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -20,6 +21,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
@@ -29,6 +31,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -40,8 +43,10 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import com.daviddj.proyecto_final_djl.AppViewModelProvider
@@ -50,7 +55,9 @@ import com.daviddj.proyecto_final_djl.InventoryTopAppBar
 import com.daviddj.proyecto_final_djl.NavigationDestination
 import com.daviddj.proyecto_final_djl.R
 import com.daviddj.proyecto_final_djl.VideoPlayer
+import com.daviddj.proyecto_final_djl.model.NotaMultimedia
 import com.daviddj.proyecto_final_djl.viewModel.UpdateNotaViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 
 object NotaEditDestination : NavigationDestination {
@@ -60,6 +67,7 @@ object NotaEditDestination : NavigationDestination {
     val routeWithArgs = "$route/{$itemIdArg}"
 }
 
+@SuppressLint("UnrememberedMutableState")
 @RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -69,6 +77,7 @@ fun UpdateNotaScreen(
     modifier: Modifier = Modifier,
     viewModel: UpdateNotaViewModel = viewModel(factory = AppViewModelProvider.Factory)
 ) {
+
     val coroutineScope = rememberCoroutineScope()
 
     var imageUris by remember { mutableStateOf(listOf<Uri>()) }
@@ -197,12 +206,22 @@ fun UpdateNotaScreen(
                 }
             }
             Spacer(modifier = Modifier.height(16.dp))        //MOSTRAR MULTIMEDIA
+
             val imagenesCargadas = viewModel.notaUiState.notaDetails.imageUris.split(",")
             val videosCargados = viewModel.notaUiState.notaDetails.videoUris.split(",")
+
             val nuevos = imageUris + videoUris
 
-            val combinedList = listOf(imagenesCargadas, videosCargados, nuevos)
+//            val mutableStateFlow: MutableStateFlow<List<NotaMultimedia>> = MutableStateFlow(emptyList())
+//            LazyColumn {
+//                items(mutableStateFlow) { notaMultimedia ->
+//                    Text(text = notaMultimedia.toString())
+//                    // Aquí puedes añadir más composables para mostrar la información de NotaMultimedia como prefieras.
+//                }
+//            }
 
+            val combinedList = listOf(imagenesCargadas, videosCargados, nuevos)
+            val idnota = viewModel.notaUiState.notaDetails.id
             LazyColumn {
                 itemsIndexed(combinedList) { index, list ->
                     when (index) {
@@ -306,19 +325,20 @@ fun UpdateNotaScreen(
                                         }
                                         Spacer(modifier = Modifier.height(16.dp))
                                         // Agrega el TextField para la descripción aquí
-                                        TextField(
-                                            value = viewModel.notaMultimediaUiState.notaMultimediaDetails.descripcion,
-                                            onValueChange = { newDescription ->
-                                                viewModel.setNotaMultimediaUiState(
-                                                    viewModel.notaMultimediaUiState.copy(
-                                                        notaMultimediaDetails = viewModel.notaMultimediaUiState.notaMultimediaDetails.copy(descripcion = newDescription)
-                                                    )
-                                                )
-                                            },
-                                            label = { Text("Descripción") },
-                                            modifier = Modifier.fillMaxWidth()
-                                        )
-                                        Spacer(modifier = Modifier.height(16.dp))
+//                                        TextField(
+//                                            value = viewModel.notaMultimediaUiState.notaMultimediaDetails.descripcion,
+//                                            onValueChange = { newDescription ->
+//                                                viewModel.setNotaMultimediaUiState(
+//                                                    viewModel.notaMultimediaUiState.copy(
+//                                                        notaMultimediaDetails = viewModel.notaMultimediaUiState.notaMultimediaDetails.copy(descripcion = newDescription)
+//                                                    )
+//                                                )
+//                                            },
+//                                            label = { Text("Descripción") },
+//                                            modifier = Modifier.fillMaxWidth(),
+//                                            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done)
+//                                        )
+//                                        Spacer(modifier = Modifier.height(16.dp))
                                         // Agrega el botón aquí
                                         Button(
                                             onClick = {
@@ -330,7 +350,7 @@ fun UpdateNotaScreen(
                                             },
                                             modifier = Modifier.align(Alignment.End)
                                         ) {
-                                            Text("Eliminar")
+                                            Text(stringResource(R.string.delete))
                                         }
                                     }
                                 }
@@ -345,3 +365,4 @@ fun UpdateNotaScreen(
 
     }
 }
+
