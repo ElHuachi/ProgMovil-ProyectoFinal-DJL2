@@ -1,5 +1,6 @@
 package com.daviddj.proyecto_final_djl.ui
 
+import android.content.res.Configuration
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.clickable
@@ -13,6 +14,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -58,39 +60,75 @@ import com.daviddj.proyecto_final_djl.viewModel.NotasScreenViewModel
 @Composable
 fun NotasList(
     modifier: Modifier = Modifier,
-    windowSize: WindowWidthSizeClass,
+    configuration: Configuration,
     contentPadding: PaddingValues = PaddingValues(0.dp),
-    viewModel : NotasScreenViewModel = viewModel(factory = AppViewModelProvider.Factory),
+    viewModel: NotasScreenViewModel = viewModel(factory = AppViewModelProvider.Factory),
     navController: NavHostController,
     navigateToItemUpdate: (Int) -> Unit,
 ){
     val homeUiState by viewModel.homeUiState.collectAsState()
+
     Scaffold(
         topBar = {
             Column {
                 CustomTopAppBar(stringResource(R.string.notas))
                 AppTopBar(navController = navController)
                 Spacer(modifier = Modifier.height(15.dp))
-                Row (modifier = Modifier.align(Alignment.CenterHorizontally)){
-                    BarraBusqueda(
-                        label = R.string.busqueda,
-                        leadingIcon = R.drawable.lupa,
-                        value = viewModel.busquedaInput.value,
-                        onValueChanged = { viewModel.busquedaInput.value = it },
+                if (configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+                    // Si estamos en modo landscape, muestra la barra de búsqueda arriba
+                    Row(
                         modifier = Modifier
-                            .padding(bottom = 32.dp)
-                            .fillMaxWidth(.925f),
-                        keyboardOptions = KeyboardOptions.Default.copy(
-                            keyboardType = KeyboardType.Text,
-                            imeAction = ImeAction.Done
+                            .fillMaxWidth()
+                            .padding(16.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        BarraBusqueda(
+                            label = R.string.busqueda,
+                            leadingIcon = R.drawable.lupa,
+                            value = viewModel.busquedaInput.value,
+                            onValueChanged = { viewModel.busquedaInput.value = it },
+                            modifier = Modifier
+                                .fillMaxWidth(.7f),
+                            keyboardOptions = KeyboardOptions.Default.copy(
+                                keyboardType = KeyboardType.Text,
+                                imeAction = ImeAction.Done
+                            )
                         )
-                    )
+                        FloatingActionButton(
+                            onClick = { navController.navigate(Routes.NotasEditor.route) },
+                            modifier = Modifier
+                                .size(56.dp)
+                        ) {
+                            Icon(Icons.Default.Add, contentDescription = "Agregar")
+                        }
+                    }
+                } else {
+                    // Si no estamos en modo landscape, muestra la barra de búsqueda como antes
+                    Spacer(modifier = Modifier.height(15.dp))
+                    Row(modifier = Modifier.align(Alignment.CenterHorizontally)) {
+                        BarraBusqueda(
+                            label = R.string.busqueda,
+                            leadingIcon = R.drawable.lupa,
+                            value = viewModel.busquedaInput.value,
+                            onValueChanged = { viewModel.busquedaInput.value = it },
+                            modifier = Modifier
+                                .padding(bottom = 32.dp)
+                                .fillMaxWidth(.925f),
+                            keyboardOptions = KeyboardOptions.Default.copy(
+                                keyboardType = KeyboardType.Text,
+                                imeAction = ImeAction.Done
+                            )
+                        )
+                    }
                 }
             }
         },
         floatingActionButton = {
-            FloatingActionButton(onClick = { navController.navigate(Routes.NotasEditor.route) }) {
-                Icon(Icons.Default.Add, contentDescription = "Agregar")
+            if (configuration.orientation != Configuration.ORIENTATION_LANDSCAPE) {
+                // Si no estamos en modo landscape, muestra el FAB como antes
+                FloatingActionButton(onClick = { navController.navigate(Routes.NotasEditor.route) }) {
+                    Icon(Icons.Default.Add, contentDescription = "Agregar")
+                }
             }
         },
         floatingActionButtonPosition = FabPosition.End

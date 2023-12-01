@@ -1,5 +1,7 @@
 package com.daviddj.proyecto_final_djl
 
+import android.app.Activity
+import android.content.res.Configuration
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -9,9 +11,11 @@ import androidx.annotation.DrawableRes
 import androidx.annotation.RequiresApi
 import androidx.annotation.StringRes
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -37,6 +41,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -83,93 +88,117 @@ class MainActivity : ComponentActivity() {
     }
 
     private var audioFile: File? = null
+
     @OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            ProyectoFinalDJLTheme {
-                // A surface container using the 'background' color from the theme
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background
-                ) {
-                    val windowSize = calculateWindowSizeClass(this)
-                    val navigationcontroller = rememberNavController()
-                    NavHost(navController = navigationcontroller, startDestination = Routes.NotasScreen.route){
-                        composable(Routes.NotasScreen.route){
-                            NotasList(navController = navigationcontroller, windowSize = windowSize.widthSizeClass, navigateToItemUpdate = {
-                                navigationcontroller.navigate("${NotasDetallesDestination.route}/${it}")
-                            })
-                        }
-                        composable(Routes.TareasScreen.route){
-                            TareasList(navController = navigationcontroller, navigateToItemUpdate = {
-                                navigationcontroller.navigate("${TareasDetallesDestination.route}/${it}")
-                            })
-                        }
-                        composable(
-                            route = NotasDetallesDestination.routeWithArgs,
-                            arguments = listOf(navArgument(NotasDetallesDestination.notaIdArg) {
-                                type = NavType.IntType
-                            })
-                        ) {
-                            NotaDetailsScreen(
-                                navigateToEditItem = { navigationcontroller.navigate("${NotaEditDestination.route}/$it") },
-                                navigateBack = { navigationcontroller.navigateUp() }
-                            )
-                        }
-                        composable(
-                            route = TareasDetallesDestination.routeWithArgs,
-                            arguments = listOf(navArgument(TareasDetallesDestination.tareaIdArg) {
-                                type = NavType.IntType
-                            })
-                        ) {
-                            TareaDetailsScreen(
-                                navigateToEditItem = { navigationcontroller.navigate("${TareaEditDestination.route}/$it") },
-                                navigateBack = { navigationcontroller.navigateUp() }
-                            )
-                        }
-                        composable(
-                            route = TareaEditDestination.routeWithArgs,
-                            arguments = listOf(navArgument(TareaEditDestination.itemIdArg) {
-                                type = NavType.IntType
-                            })
-                        ) {
-                            UpdateTareaScreen(
-                                navigateBack = { navigationcontroller.popBackStack() },
-                                onNavigateUp = { navigationcontroller.navigateUp() },
-                                alarmScheduler = AlarmSchedulerImpl(applicationContext)
-                            )
-                        }
-                        composable(
-                            route = NotaEditDestination.routeWithArgs,
-                            arguments = listOf(navArgument(NotaEditDestination.itemIdArg) {
-                                type = NavType.IntType
-                            })
-                        ) {
-                            UpdateNotaScreen(
-                                navigateBack = { navigationcontroller.popBackStack() },
-                                onNavigateUp = { navigationcontroller.navigateUp() }
-                            )
-                        }
-                        composable(Routes.NotasEditor.route){
-                            EditorNotas(navigateBack = { navigationcontroller.popBackStack()}, navController = navigationcontroller,
-                                onClickStGra = {
-                                    File(cacheDir, "audio.mp3").also {
-                                        recorder.start(it)
-                                        audioFile = it
-                                    }
+            MainActivityScreen()
+        }
+    }
 
-                                },
-                                onClickSpGra = {recorder.stop()},
-                                onClickStRe = { audioFile?.let { player.start(it) } },
-                                onClickSpRe = {player.stop()})
-                        }
-                        composable(Routes.TareasEditor.route){
-                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                            EditorTareas(navigateBack = { navigationcontroller.popBackStack()}, navController = navigationcontroller,
-                                alarmScheduler = AlarmSchedulerImpl(applicationContext))
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3WindowSizeClassApi::class)
+    @Composable
+    fun MainActivityScreen() {
+        val context = LocalContext.current
+        val windowSize = calculateWindowSizeClass(context as Activity)
+        val navController = rememberNavController()
+
+        ProyectoFinalDJLTheme {
+            Surface(
+                modifier = Modifier.fillMaxSize(),
+                color = MaterialTheme.colorScheme.background
+            ) {
+                NavHost(
+                    navController = navController,
+                    startDestination = Routes.NotasScreen.route
+                ) {
+                    composable(Routes.NotasScreen.route) {
+                        NotasList(
+                            navController = navController,
+                            configuration = LocalConfiguration.current,
+                            navigateToItemUpdate = {
+                                navController.navigate("${NotasDetallesDestination.route}/${it}")
                             }
+                        )
+                    }
+                    composable(Routes.TareasScreen.route) {
+                        TareasList(
+                            navController = navController,
+                            configuration = LocalConfiguration.current,
+                            navigateToItemUpdate = {
+                            navController.navigate("${TareasDetallesDestination.route}/${it}")
+                        })
+                    }
+                    composable(
+                        route = NotasDetallesDestination.routeWithArgs,
+                        arguments = listOf(navArgument(NotasDetallesDestination.notaIdArg) {
+                            type = NavType.IntType
+                        })
+                    ) {
+                        NotaDetailsScreen(
+                            navigateToEditItem = { navController.navigate("${NotaEditDestination.route}/$it") },
+                            navigateBack = { navController.navigateUp() }
+                        )
+                    }
+                    composable(
+                        route = TareasDetallesDestination.routeWithArgs,
+                        arguments = listOf(navArgument(TareasDetallesDestination.tareaIdArg) {
+                            type = NavType.IntType
+                        })
+                    ) {
+                        TareaDetailsScreen(
+                            navigateToEditItem = { navController.navigate("${TareaEditDestination.route}/$it") },
+                            navigateBack = { navController.navigateUp() }
+                        )
+                    }
+                    composable(
+                        route = TareaEditDestination.routeWithArgs,
+                        arguments = listOf(navArgument(TareaEditDestination.itemIdArg) {
+                            type = NavType.IntType
+                        })
+                    ) {
+                        UpdateTareaScreen(
+                            navigateBack = { navController.popBackStack() },
+                            onNavigateUp = { navController.navigateUp() },
+                            alarmScheduler = AlarmSchedulerImpl(context)
+                        )
+                    }
+                    composable(
+                        route = NotaEditDestination.routeWithArgs,
+                        arguments = listOf(navArgument(NotaEditDestination.itemIdArg) {
+                            type = NavType.IntType
+                        })
+                    ) {
+                        UpdateNotaScreen(
+                            navigateBack = { navController.popBackStack() },
+                            onNavigateUp = { navController.navigateUp() }
+                        )
+                    }
+                    composable(Routes.NotasEditor.route) {
+                        EditorNotas(
+                            navigateBack = { navController.popBackStack() },
+                            navController = navController,
+                            onClickStGra = {
+                                File(context.cacheDir, "audio.mp3").also {
+                                    recorder.start(it)
+                                    audioFile = it
+                                }
+                            },
+                            onClickSpGra = { recorder.stop() },
+                            onClickStRe = { audioFile?.let { player.start(it) } },
+                            onClickSpRe = { player.stop() })
+                    }
+                    composable(Routes.TareasEditor.route) {
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                            EditorTareas(
+                                navigateBack = { navController.popBackStack() },
+                                navController = navController,
+                                alarmScheduler = AlarmSchedulerImpl(context)
+                            )
                         }
                     }
                 }
@@ -206,39 +235,35 @@ fun VideoPlayer(videoUri: Uri, modifier: Modifier = Modifier) {
         },
         modifier = modifier
     )
-
-//    IconButton(
-//        onClick = {
-//            if (isPlaying) {
-//                exoPlayer.pause()
-//            } else {
-//                exoPlayer.play()
-//            }
-//        },
-//        modifier = Modifier
-//            //.align(Alignment.BottomEnd)
-//            .padding(16.dp)
-//    ) {
-//        Icon(
-//            imageVector = if (isPlaying) Icons.Filled.Refresh else Icons.Filled.PlayArrow,
-//            contentDescription = if (isPlaying) "Pause" else "Play",
-//            tint = Color.White,
-//            modifier = Modifier.size(48.dp)
-//        )
-//    }
 }
 
 //BOTONES DE NAVEGACION DE LA PARTE SUPERIOR
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AppTopBar(modifier: Modifier =  Modifier, navController: NavController){
+fun AppTopBar(modifier: Modifier = Modifier, navController: NavController) {
+    val orientation = LocalContext.current.resources.configuration.orientation
+    val buttonSize = if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
+        50.dp // Tamaño más grande para landscape
+    } else {
+        40.dp // Tamaño normal para portrait
+    }
     CenterAlignedTopAppBar(
         title = {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Button(onClick = { navController.navigate(Routes.NotasScreen.route) }) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp), // Añadir espacio entre los bordes de la pantalla y los botones
+                horizontalArrangement = Arrangement.SpaceBetween // Espaciado entre los botones
+            ) {
+                Button(
+                    onClick = { navController.navigate(Routes.NotasScreen.route) },
+                    modifier = Modifier
+                        .weight(1f) // El botón se expandirá para ocupar todo el espacio disponible
+                        .padding(end = 8.dp) // Añadir espacio entre los botones
+                ) {
                     Image(
                         modifier = Modifier
-                            .size(40.dp)
+                            .size(buttonSize)
                             .padding(4.dp),
                         painter = painterResource(R.drawable.notas),
                         contentDescription = null
@@ -248,16 +273,21 @@ fun AppTopBar(modifier: Modifier =  Modifier, navController: NavController){
                         style = MaterialTheme.typography.bodyLarge
                     )
                 }
-                Spacer(modifier = Modifier.width(10.dp))
-                Button(onClick = { navController.navigate(Routes.TareasScreen.route) }) {
+                Button(
+                    onClick = { navController.navigate(Routes.TareasScreen.route) },
+                    modifier = Modifier
+                        .weight(1f) // El botón se expandirá para ocupar todo el espacio disponible
+                        .padding(start = 8.dp) // Añadir espacio entre los botones
+                ) {
                     Image(
                         modifier = Modifier
-                            .size(40.dp)
+                            .size(buttonSize)
                             .padding(4.dp),
                         painter = painterResource(R.drawable.tareas),
                         contentDescription = null
                     )
-                    Text(text = stringResource(R.string.tareas),
+                    Text(
+                        text = stringResource(R.string.tareas),
                         style = MaterialTheme.typography.bodyLarge
                     )
                 }
@@ -321,36 +351,3 @@ fun InventoryTopAppBar(
         }
     )
 }
-
-//@RequiresApi(Build.VERSION_CODES.O)
-//@Preview(showBackground = true)
-//@Composable
-//fun DefaultPreview() {
-//    ProyectoFinalDJLTheme {
-//        Surface {
-//            NotasList(navController = rememberNavController(), windowSize = WindowWidthSizeClass.Medium)
-//        }
-//    }
-//}
-
-//@RequiresApi(Build.VERSION_CODES.O)
-//@Preview(showBackground = true, widthDp = 700)
-//@Composable
-//fun GreetingPreview() {
-//    ProyectoFinalDJLTheme(useDarkTheme=false) {
-//        Surface {
-//            NotasList(navController = rememberNavController(), windowSize = WindowWidthSizeClass.Medium)
-//        }
-//    }
-//}
-
-//@RequiresApi(Build.VERSION_CODES.O)
-//@Preview(showBackground = true, widthDp = 1000)
-//@Composable
-//fun GreetingExpandedPreview() {
-//    ProyectoFinalDJLTheme(useDarkTheme=false) {
-//        Surface {
-//            NotasList(navController = rememberNavController(), windowSize = WindowWidthSizeClass.Expanded)
-//        }
-//    }
-//}
