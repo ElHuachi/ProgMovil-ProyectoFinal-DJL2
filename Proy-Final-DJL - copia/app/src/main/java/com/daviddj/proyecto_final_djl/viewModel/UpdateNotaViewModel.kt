@@ -8,6 +8,7 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.daviddj.proyecto_final_djl.data.NotaMultimediaRepository
 import com.daviddj.proyecto_final_djl.data.NotasRepository
 import com.daviddj.proyecto_final_djl.ui.NotaEditDestination
 import kotlinx.coroutines.flow.filterNotNull
@@ -18,11 +19,25 @@ import java.time.format.DateTimeFormatter
 
 class UpdateNotaViewModel(
     savedStateHandle: SavedStateHandle,
-    private val notasRepository: NotasRepository
+    private val notasRepository: NotasRepository,
+    val notasMultimediaRepository: NotaMultimediaRepository
 ) : ViewModel() {
 
     var imageUris by mutableStateOf(listOf<Uri>())
     var videoUris by mutableStateOf(listOf<Uri>())
+
+    private val _notaMultimediaUiState = mutableStateOf(NotaMultimediaUiState())
+    val notaMultimediaUiState: NotaMultimediaUiState
+        get() = _notaMultimediaUiState.value
+
+    fun setNotaMultimediaUiState(newUiState: NotaMultimediaUiState) {
+        _notaMultimediaUiState.value = newUiState
+    }
+
+    fun removeUri(uri: Uri) {
+        imageUris = imageUris.filter { it != uri }
+        videoUris = videoUris.filter { it != uri }
+    }
 
     var notaUiState by mutableStateOf(NotaUiState())
         private set
@@ -65,3 +80,5 @@ class UpdateNotaViewModel(
         }
     }
 }
+
+

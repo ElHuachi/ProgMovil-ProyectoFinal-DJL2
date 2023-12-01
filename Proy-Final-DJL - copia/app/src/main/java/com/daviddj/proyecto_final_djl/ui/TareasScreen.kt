@@ -67,7 +67,7 @@ fun TareasList(
     Scaffold(
         topBar = {
             Column {
-                CustomTopAppBar("Tareas")
+                CustomTopAppBar(stringResource(R.string.tareas))
                 AppTopBar(navController = navController)
                 Spacer(modifier = Modifier.height(15.dp))
                 Row (modifier = Modifier.align(Alignment.CenterHorizontally)){

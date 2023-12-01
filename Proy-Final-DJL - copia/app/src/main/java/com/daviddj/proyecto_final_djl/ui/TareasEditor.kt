@@ -1,9 +1,17 @@
 package com.daviddj.proyecto_final_djl.ui
 
+import android.app.AlarmManager
 import android.app.DatePickerDialog
+import android.app.NotificationManager
+import android.app.PendingIntent
 import android.app.TimePickerDialog
+import android.content.BroadcastReceiver
+import android.content.Context
+import android.content.Intent
 import android.net.Uri
 import android.os.Build
+import android.os.SystemClock
+import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
@@ -50,6 +58,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.core.app.NotificationCompat
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
@@ -75,7 +84,7 @@ fun EditorTareas(
     navigateBack: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel : TareasEditorViewModel = viewModel(factory = AppViewModelProvider.Factory),
-    navController: NavHostController,
+    navController: NavHostController
 ) {
     val coroutineScope = rememberCoroutineScope()
     var selectedDate by rememberSaveable { mutableStateOf("") }
@@ -414,3 +423,5 @@ fun TimePicker(onTimeSelected: (String) -> Unit, isEnabled: Boolean) {
         )
     }
 }
+
+

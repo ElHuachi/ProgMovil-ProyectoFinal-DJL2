@@ -9,27 +9,18 @@ import androidx.annotation.DrawableRes
 import androidx.annotation.RequiresApi
 import androidx.annotation.StringRes
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.Button
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
-import androidx.compose.material3.Checkbox
-import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -42,12 +33,10 @@ import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
 import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -62,7 +51,8 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.daviddj.proyecto_final_djl.model.Multimedia
+import com.daviddj.proyecto_final_djl.ui.AndroidAudioPlayer
+import com.daviddj.proyecto_final_djl.ui.AndroidAudioRecorder
 import com.daviddj.proyecto_final_djl.ui.EditorNotas
 import com.daviddj.proyecto_final_djl.ui.EditorTareas
 import com.daviddj.proyecto_final_djl.ui.NotaDetailsScreen
@@ -80,8 +70,18 @@ import com.daviddj.proyecto_final_djl.ui.theme.ProyectoFinalDJLTheme
 import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.SimpleExoPlayer
 import com.google.android.exoplayer2.ui.PlayerView
+import java.io.File
 
 class MainActivity : ComponentActivity() {
+    private val recorder by lazy {
+        AndroidAudioRecorder(applicationContext)
+    }
+
+    private val player by lazy {
+        AndroidAudioPlayer(applicationContext)
+    }
+
+    private var audioFile: File? = null
     @OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -151,10 +151,22 @@ class MainActivity : ComponentActivity() {
                             )
                         }
                         composable(Routes.NotasEditor.route){
-                            EditorNotas(navigateBack = { navigationcontroller.popBackStack()}, navController = navigationcontroller)
+                            EditorNotas(navigateBack = { navigationcontroller.popBackStack()}, navController = navigationcontroller,
+                                onClickStGra = {
+                                    File(cacheDir, "audio.mp3").also {
+                                        recorder.start(it)
+                                        audioFile = it
+                                    }
+
+                                },
+                                onClickSpGra = {recorder.stop()},
+                                onClickStRe = { audioFile?.let { player.start(it) } },
+                                onClickSpRe = {player.stop()})
                         }
                         composable(Routes.TareasEditor.route){
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                             EditorTareas(navigateBack = { navigationcontroller.popBackStack()}, navController = navigationcontroller)
+                            }
                         }
                     }
                 }
@@ -213,6 +225,7 @@ fun VideoPlayer(videoUri: Uri, modifier: Modifier = Modifier) {
 //    }
 }
 
+//BOTONES DE NAVEGACION DE LA PARTE SUPERIOR
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AppTopBar(modifier: Modifier =  Modifier, navController: NavController){
@@ -251,7 +264,7 @@ fun AppTopBar(modifier: Modifier =  Modifier, navController: NavController){
     )
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
+//BARRA DE BUSQUEDA
 @Composable
 fun BarraBusqueda(
     @StringRes label: Int,
@@ -304,40 +317,6 @@ fun InventoryTopAppBar(
             }
         }
     )
-}
-
-@Composable
-fun TarjetaMultimedia(multimedia: Multimedia, modifier: Modifier = Modifier){
-    Card(
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
-        modifier = modifier,
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(16.dp)
-                .sizeIn(minHeight = 72.dp)
-        ){
-            Box(
-                modifier = Modifier
-                    .size(72.dp)
-                    .clip(RoundedCornerShape(8.dp))
-            ){
-                Image(
-                    modifier = Modifier
-                        .size(40.dp)
-                        .padding(4.dp),
-                    painter = painterResource(R.drawable.imagen),
-                    contentDescription = null
-                )
-            }
-            Spacer(Modifier.width(16.dp))
-            Column(modifier=Modifier.weight(1f)) {
-                Text(
-                    text = multimedia.description)
-            }
-        }
-    }
 }
 
 //@RequiresApi(Build.VERSION_CODES.O)

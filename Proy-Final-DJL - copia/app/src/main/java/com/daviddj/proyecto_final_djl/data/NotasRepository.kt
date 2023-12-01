@@ -29,4 +29,6 @@ interface NotasRepository {
      */
     suspend fun updateItem(nota: Nota)
 
+    suspend fun insertItemAndGetId(nota: Nota): Long
+
 }

@@ -29,5 +29,6 @@
     <string name="fechaACompletar">Para completar</string>
     <string name="completado">Completada</string>
     <string name="marcar">Completado</string>
+    <string name="record_audio">Grabar audio</string>
 
 </resources>

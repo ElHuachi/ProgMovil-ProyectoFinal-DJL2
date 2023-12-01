@@ -68,7 +68,7 @@ fun NotasList(
     Scaffold(
         topBar = {
             Column {
-                CustomTopAppBar("Notas")
+                CustomTopAppBar(stringResource(R.string.notas))
                 AppTopBar(navController = navController)
                 Spacer(modifier = Modifier.height(15.dp))
                 Row (modifier = Modifier.align(Alignment.CenterHorizontally)){

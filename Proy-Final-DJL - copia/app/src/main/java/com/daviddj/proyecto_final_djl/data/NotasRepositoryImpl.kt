@@ -18,6 +18,10 @@ class NotasRepositoryImpl : NotasRepository {
         // Implementa este método para insertar una nota
     }
 
+    override suspend fun insertItemAndGetId(nota: Nota): Long {
+        TODO("Not yet implemented")
+    }
+
     override suspend fun deleteItem(nota: Nota) {
         // Implementa este método para eliminar una nota
     }

@@ -15,6 +15,9 @@ interface NotaDAO {
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insert(nota: Nota)
 
+    @Insert
+    suspend fun insertAndGetId(nota: Nota): Long
+
     @Update
     suspend fun update(nota: Nota)
 

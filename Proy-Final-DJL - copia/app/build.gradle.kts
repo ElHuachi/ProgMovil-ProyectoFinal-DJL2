@@ -89,4 +89,6 @@ dependencies {
 
     // Coil. Para cargar imagenes de manera asyncrona
     implementation("io.coil-kt:coil-compose:2.5.0")
+
+    implementation("com.google.accompanist:accompanist-permissions:0.33.2-alpha")
 }

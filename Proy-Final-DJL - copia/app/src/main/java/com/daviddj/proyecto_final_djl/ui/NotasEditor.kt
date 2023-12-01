@@ -1,11 +1,17 @@
 package com.daviddj.proyecto_final_djl.ui
 
+import android.Manifest
+import android.content.Context
+import android.media.MediaPlayer
+import android.media.MediaRecorder
 import android.net.Uri
 import android.os.Build
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -23,13 +29,18 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.outlined.CheckCircle
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -38,10 +49,12 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.core.net.toUri
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import coil.compose.AsyncImage
@@ -52,10 +65,17 @@ import com.daviddj.proyecto_final_djl.VideoPlayer
 import com.daviddj.proyecto_final_djl.viewModel.NotaDetails
 import com.daviddj.proyecto_final_djl.viewModel.NotaUiState
 import com.daviddj.proyecto_final_djl.viewModel.NotasEditorViewModel
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.isGranted
+import com.google.accompanist.permissions.rememberPermissionState
+import com.google.accompanist.permissions.shouldShowRationale
 import kotlinx.coroutines.launch
+import java.io.File
+import java.io.FileOutputStream
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
+@OptIn(ExperimentalPermissionsApi::class)
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun EditorNotas(
@@ -63,6 +83,10 @@ fun EditorNotas(
     modifier: Modifier = Modifier,
     navController: NavHostController,
     viewModel: NotasEditorViewModel = viewModel(factory = AppViewModelProvider.Factory),
+    onClickStGra: () -> Unit,
+    onClickSpGra: () -> Unit,
+    onClickStRe: () -> Unit,
+    onClickSpRe: () -> Unit
 ){
     val coroutineScope = rememberCoroutineScope()
     var imageUris by remember { mutableStateOf(listOf<Uri>()) }
@@ -108,6 +132,17 @@ fun EditorNotas(
 
     val context = LocalContext.current
     //MULTIMEDIA
+
+    //AUDIO
+    val recordAudioPermissionState = rememberPermissionState(
+        Manifest.permission.RECORD_AUDIO
+    )
+
+    //Realiza un seguimiento del estado del diálogo de justificación, necesario cuando el usuario requiere más justificación
+    var rationaleState by remember {
+        mutableStateOf<RationaleState?>(null)
+    }
+    //AUDIO
 
     Column (
         modifier= Modifier
@@ -164,6 +199,7 @@ fun EditorNotas(
                     val uri = ComposeFileProvider.getVideoUri(context)
                     videoUri = uri
                     videoLauncher.launch(uri)
+
                 } ) {
                 Image(
                     modifier = Modifier
@@ -193,30 +229,192 @@ fun EditorNotas(
             }
         }
         Spacer(modifier = Modifier.height(16.dp))//MOSTRAR MULTIMEDIA
-        Box(
-            modifier = modifier,
-        ) {
-            LazyColumn (modifier = Modifier.align(Alignment.Center)) {
+        Box(modifier = modifier) {
+            LazyColumn(modifier = Modifier.align(Alignment.Center)) {
                 items(imageUris + videoUris) { uri ->
-                    if (uri in imageUris) {
-                        AsyncImage(
-                            model = uri,
-                            modifier = Modifier.height(400.dp).width(300.dp).align(Alignment.Center),
-                            contentDescription = "Selected image",
-                        )
-                        Spacer(modifier = Modifier.height(16.dp))
+                    Card(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(8.dp)
+                    ) {
+                        Column {
+                            if (uri in imageUris) {
+                                AsyncImage(
+                                    model = uri,
+                                    modifier = Modifier
+                                        .height(400.dp)
+                                        .fillMaxWidth(),
+                                    contentDescription = "Selected image",
+                                )
+                            } else if (uri in videoUris) {
+                                VideoPlayer(
+                                    videoUri = uri,
+                                    modifier = Modifier
+                                        .height(400.dp)
+                                        .fillMaxWidth()
+                                )
+                            }
+                            TextField(
+                                value = viewModel.notaMultimediaUiState.notaMultimediaDetails.descripcion,
+                                onValueChange = { newDescription ->
+                                    viewModel.setNotaMultimediaUiState(
+                                        viewModel.notaMultimediaUiState.copy(
+                                            notaMultimediaDetails = viewModel.notaMultimediaUiState.notaMultimediaDetails.copy(descripcion = newDescription)
+                                        )
+                                    )
+                                },
+                                label = { Text("Descripción") },
+                                modifier = Modifier.fillMaxWidth()
+                            )
 
-                    } else if (uri in videoUris) {
-                        VideoPlayer(
-                            videoUri = uri,
-                            modifier = Modifier.height(400.dp).width(300.dp).align(Alignment.Center)
-                        )
-                        Spacer(modifier = Modifier.height(16.dp))
+                            Button(
+                                onClick = {
+                                    // Elimina la tarjeta y quita la imagen del arreglo.
+                                    imageUris = imageUris.filter { it != uri }
+                                    videoUris = videoUris.filter { it != uri }
+                                    viewModel.removeUri(uri)
+                                },
+                                modifier = Modifier.align(Alignment.End)
+                            ) {
+                                Text(stringResource(R.string.delete))
+                            }
+                        }
                     }
-                    //Text(text = "URI: $uri", modifier = Modifier.padding(8.dp))
+                    Spacer(modifier = Modifier.height(16.dp))
                 }
             }
         }
+
+    }
+}
+
+@Composable
+fun PermissionRequestButton(isGranted: Boolean, title: String,
+                            onClickStGra: () -> Unit,
+                            onClickSpGra: () -> Unit,
+                            onClickStRe: () -> Unit,
+                            onClickSpRe: () -> Unit,
+                            onClick: () -> Unit) {
+    if (isGranted) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Icon(Icons.Outlined.CheckCircle, title, modifier = Modifier.size(48.dp))
+            Spacer(Modifier.size(10.dp))
+            Text(text = title, modifier = Modifier.background(Color.Transparent))
+            Spacer(Modifier.size(10.dp))
+
+        }
+        Row {
+            Button(onClick = onClickStGra) {
+                Text("Grabar")
+            }
+            Button(onClick = onClickSpGra) {
+                Text("Parar")
+            }
+            Button(onClick = onClickStRe) {
+                Text("Reproducir")
+            }
+            Button(onClick = onClickSpRe) {
+                Text("Parar")
+            }
+        }
+    } else {
+        Button(onClick = onClick) {
+            Text("Request $title")
+        }
+    }
+}
+
+/**
+ * Simple AlertDialog that displays the given rational state
+ * Cuadro de dialogo simple que muestra el estado del rational
+ */
+@Composable
+fun PermissionRationaleDialog(rationaleState: RationaleState) {
+    AlertDialog(onDismissRequest = { rationaleState.onRationaleReply(false) }, title = {
+        Text(text = rationaleState.title)
+    }, text = {
+        Text(text = rationaleState.rationale)
+    }, confirmButton = {
+        TextButton(onClick = {
+            rationaleState.onRationaleReply(true)
+        }) {
+            Text("Continue")
+        }
+    }, dismissButton = {
+        TextButton(onClick = {
+            rationaleState.onRationaleReply(false)
+        }) {
+            Text("Dismiss")
+        }
+    })
+}
+data class RationaleState(
+    val title: String,
+    val rationale: String,
+    val onRationaleReply: (proceed: Boolean) -> Unit,
+)
+
+interface AudioRecorder {
+    fun start(outputFile: File)
+    fun stop()
+}
+class AndroidAudioRecorder(
+    private val context: Context
+): AudioRecorder {
+
+    private var recorder: MediaRecorder? = null
+
+
+    private fun createRecorder(): MediaRecorder {
+        return if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            MediaRecorder(context)
+        } else MediaRecorder()
+    }
+
+    override fun start(outputFile: File) {
+        createRecorder().apply {
+            setAudioSource(MediaRecorder.AudioSource.MIC)
+            setOutputFormat(MediaRecorder.OutputFormat.MPEG_4)
+            setAudioEncoder(MediaRecorder.AudioEncoder.AAC)
+            setOutputFile(FileOutputStream(outputFile).fd)
+
+            prepare()
+            start()
+
+            recorder = this
+        }
+    }
+
+    override fun stop() {
+        recorder?.stop()
+        recorder?.reset()
+        recorder = null
+    }
+}
+
+class AndroidAudioPlayer(
+    private val context: Context
+): AudioRecorder {
+
+    private var player: MediaPlayer? = null
+
+
+    override fun start(outputFile: File) {
+        MediaPlayer.create(context, outputFile.toUri()).apply {
+            player = this
+            start()
+        }
+    }
+
+    override fun stop() {
+        player?.stop()
+        player?.release()
+        player = null
     }
 }
 

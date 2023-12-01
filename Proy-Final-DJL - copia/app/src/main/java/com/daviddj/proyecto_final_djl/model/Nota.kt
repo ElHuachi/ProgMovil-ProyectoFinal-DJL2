@@ -2,6 +2,7 @@ package com.daviddj.proyecto_final_djl.model
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity
+import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
 import java.time.LocalDateTime
 import java.util.Date
@@ -15,3 +16,4 @@ data class Nota(
     @ColumnInfo(name = "imageUris") var imageUris: String,
     @ColumnInfo(name = "videoUris") var videoUris: String
 )
+

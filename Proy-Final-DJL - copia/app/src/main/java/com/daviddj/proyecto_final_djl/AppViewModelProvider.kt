@@ -21,7 +21,9 @@ object AppViewModelProvider{
     @RequiresApi(Build.VERSION_CODES.O)
     val Factory = viewModelFactory {
         initializer {
-            NotasEditorViewModel(notasApplication().container.notasRepository)
+            NotasEditorViewModel(notasApplication().container.notasRepository,
+                notasApplication().container.notasMultimediaRepository
+            )
         }
 
         initializer {
@@ -46,7 +48,8 @@ object AppViewModelProvider{
         initializer {
             UpdateNotaViewModel(
                 this.createSavedStateHandle(),
-                notasApplication().container.notasRepository
+                notasApplication().container.notasRepository,
+                notasApplication().container.notasMultimediaRepository
             )
         }
 
