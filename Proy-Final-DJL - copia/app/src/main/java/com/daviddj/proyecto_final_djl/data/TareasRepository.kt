@@ -1,5 +1,6 @@
 package com.daviddj.proyecto_final_djl.data
 
+import com.daviddj.proyecto_final_djl.model.Nota
 import com.daviddj.proyecto_final_djl.model.Tarea
 import kotlinx.coroutines.flow.Flow
 
@@ -28,5 +29,7 @@ interface TareasRepository {
      * Update item in the data source
      */
     suspend fun updateItem(tarea: Tarea)
+
+    suspend fun insertItemAndGetId(tarea: Tarea): Long
 
 }

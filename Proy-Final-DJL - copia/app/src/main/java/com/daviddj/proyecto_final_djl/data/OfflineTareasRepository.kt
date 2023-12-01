@@ -1,5 +1,6 @@
 package com.daviddj.proyecto_final_djl.data
 
+import com.daviddj.proyecto_final_djl.model.Nota
 import com.daviddj.proyecto_final_djl.model.Tarea
 import kotlinx.coroutines.flow.Flow
 
@@ -13,4 +14,8 @@ class OfflineTareasRepository(private val tareaDao: TareaDAO):TareasRepository {
     override suspend fun deleteItem(tarea: Tarea) = tareaDao.delete(tarea)
 
     override suspend fun updateItem(tarea: Tarea) = tareaDao.update(tarea)
+
+    override suspend fun insertItemAndGetId(tarea: Tarea): Long {
+        return tareaDao.insertAndGetId(tarea)
+    }
 }

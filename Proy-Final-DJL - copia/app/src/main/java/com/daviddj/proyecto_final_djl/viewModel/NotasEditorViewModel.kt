@@ -16,7 +16,8 @@ import java.time.format.DateTimeFormatter
 
 @RequiresApi(Build.VERSION_CODES.O)
 class NotasEditorViewModel(private val notasRepository: NotasRepository,
-                           private val notasMultimediaRepository: NotaMultimediaRepository) : ViewModel() {
+                           private val notasMultimediaRepository: NotaMultimediaRepository
+) : ViewModel() {
 
     data class MultimediaDescription(val uri: Uri, var descripcion: String)
 
@@ -64,7 +65,7 @@ class NotasEditorViewModel(private val notasRepository: NotasRepository,
             val notaId = notasRepository.insertItemAndGetId(notaUiState.notaDetails.toItem())
 
             // Guarda los archivos multimedia con el ID de la nota y la descripción del TextField.
-            for ((index, uri) in (imageUris + videoUris).withIndex()) {
+            for ((index, uri) in (imageUris).withIndex()) {
                 val multimediaDescription = multimediaDescriptions
                     .firstOrNull { it.uri == uri }
                     ?: MultimediaDescription(uri, "Sin descripción")
@@ -72,7 +73,23 @@ class NotasEditorViewModel(private val notasRepository: NotasRepository,
                 val notaMultimedia = NotaMultimedia(
                     uri = uri.toString(),
                     descripcion = multimediaDescription.descripcion,
-                    notaId = notaId.toInt()
+                    notaId = notaId.toInt(),
+                    tipo = "imagen"
+                )
+                notasMultimediaRepository.insertItem(notaMultimedia)
+            }
+
+            // Guarda los archivos multimedia con el ID de la nota y la descripción del TextField.
+            for ((index, uri) in (videoUris).withIndex()) {
+                val multimediaDescription = multimediaDescriptions
+                    .firstOrNull { it.uri == uri }
+                    ?: MultimediaDescription(uri, "Sin descripción")
+
+                val notaMultimedia = NotaMultimedia(
+                    uri = uri.toString(),
+                    descripcion = multimediaDescription.descripcion,
+                    notaId = notaId.toInt(),
+                    tipo = "video"
                 )
                 notasMultimediaRepository.insertItem(notaMultimedia)
             }
@@ -151,7 +168,8 @@ data class NotaMultimediaDetails(
     val id: Int = 0,
     val uri: String = "",
     var descripcion: String = "",
-    var notaId: Int = 0
+    var notaId: Int = 0,
+    var tipo: String = ""
 )
 
 
@@ -159,7 +177,8 @@ fun NotaMultimediaDetails.toItem(): NotaMultimedia = NotaMultimedia(
     id = id,
     uri = uri,
     descripcion = descripcion,
-    notaId = notaId
+    notaId = notaId,
+    tipo = tipo
 )
 
 fun NotaMultimedia.toItemUiState(): NotaMultimediaUiState = NotaMultimediaUiState(
@@ -170,5 +189,6 @@ fun NotaMultimedia.toItemDetails(): NotaMultimediaDetails = NotaMultimediaDetail
     id = id,
     uri = uri,
     descripcion = descripcion,
-    notaId = notaId
+    notaId = notaId,
+    tipo = tipo
 )

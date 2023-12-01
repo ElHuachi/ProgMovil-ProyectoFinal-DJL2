@@ -8,6 +8,8 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.daviddj.proyecto_final_djl.data.NotaMultimediaRepository
+import com.daviddj.proyecto_final_djl.data.TareaMultimediaRepository
 import com.daviddj.proyecto_final_djl.data.TareasRepository
 import com.daviddj.proyecto_final_djl.ui.TareaEditDestination
 import kotlinx.coroutines.flow.filterNotNull
@@ -17,7 +19,8 @@ import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
 class UpdateTareaViewModel(savedStateHandle: SavedStateHandle,
-   private val tareasRepository: TareasRepository
+   private val tareasRepository: TareasRepository,
+                           val tareasMultimediaRepository: TareaMultimediaRepository
 ) : ViewModel() {
 
     /**
@@ -28,6 +31,14 @@ class UpdateTareaViewModel(savedStateHandle: SavedStateHandle,
 
     var imageUris by mutableStateOf(listOf<Uri>())
     var videoUris by mutableStateOf(listOf<Uri>())
+
+    private val _tareaMultimediaUiState = mutableStateOf(NotaMultimediaUiState())
+    val tareaMultimediaUiState: NotaMultimediaUiState
+        get() = _tareaMultimediaUiState.value
+
+//    fun setTareaMultimediaUiState(newUiState: TareaMultimediaUiState) {
+//        _tareaMultimediaUiState.value = newUiState
+//    }
 
     private val tareaId: Int = checkNotNull(savedStateHandle[TareaEditDestination.itemIdArg])
 
@@ -47,6 +58,11 @@ class UpdateTareaViewModel(savedStateHandle: SavedStateHandle,
         if (validateInput(tareaUiState.tareaDetails)) {
             tareasRepository.updateItem(tareaUiState.tareaDetails.toItem())
         }
+    }
+
+    fun removeUri(uri: Uri) {
+        imageUris = imageUris.filter { it != uri }
+        videoUris = videoUris.filter { it != uri }
     }
 
     /**

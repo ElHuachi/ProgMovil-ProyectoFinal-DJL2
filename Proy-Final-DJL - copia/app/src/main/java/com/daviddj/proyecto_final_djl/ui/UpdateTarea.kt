@@ -19,6 +19,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.Button
+import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -275,61 +276,132 @@ fun UpdateTareaScreen(
                     when (index) {
                         0 -> { // Renderiza las imágenes cargadas aquí
                             list.forEach { uri ->
-                                val parsedUri = Uri.parse(uri.toString())
-                                //viewModel.imageUris=viewModel.imageUris.plus(parsedUri!!)
-                                AsyncImage(
-                                    model = parsedUri,
+                                Card(
                                     modifier = Modifier
-                                        .height(300.dp)
-                                        .width(300.dp)
-                                        .align(CenterHorizontally),
-                                    contentDescription = "Selected image",
-                                )
-                                Spacer(modifier = Modifier.height(16.dp))
-
+                                        .fillMaxWidth()
+                                        .padding(8.dp)
+                                ) {
+                                    Column {
+                                        val parsedUri = Uri.parse(uri.toString())
+                                        AsyncImage(
+                                            model = parsedUri,
+                                            modifier = Modifier
+                                                .height(400.dp)
+                                                .fillMaxWidth()
+                                                .align(Alignment.CenterHorizontally),
+                                            contentDescription = "Selected image",
+                                        )
+                                        Spacer(modifier = Modifier.height(16.dp))
+                                        // Agrega el botón aquí
+                                        Button(
+                                            onClick = {
+                                                // Elimina la tarjeta y quita la imagen del arreglo.
+                                                imageUris = imageUris.filter { it != uri }
+                                                videoUris = videoUris.filter { it != uri }
+                                                val u = Uri.parse(uri.toString())
+                                                viewModel.removeUri(u)
+                                            },
+                                            modifier = Modifier.align(Alignment.End)
+                                        ) {
+                                            Text("Eliminar")
+                                        }
+                                    }
+                                }
                             }
                         }
                         1 -> { // Renderiza los videos cargados aquí
                             list.forEach { uri ->
-                                val parsedUri = Uri.parse(uri.toString())
-                                //viewModel.videoUris=viewModel.videoUris.plus(parsedUri!!)
-                                VideoPlayer(
-                                    videoUri = parsedUri,
+                                Card(
                                     modifier = Modifier
-                                        .height(300.dp)
-                                        .width(300.dp)
-                                        .align(CenterHorizontally)
-                                )
-                                Spacer(modifier = Modifier.height(16.dp))
-
+                                        .fillMaxWidth()
+                                        .padding(8.dp)
+                                ) {
+                                    Column {
+                                        val parsedUri = Uri.parse(uri.toString())
+                                        VideoPlayer(
+                                            videoUri = parsedUri,
+                                            modifier = Modifier
+                                                .height(400.dp)
+                                                .fillMaxWidth()
+                                                .align(Alignment.CenterHorizontally)
+                                        )
+                                        Spacer(modifier = Modifier.height(16.dp))
+                                        // Agrega el botón aquí
+                                        Button(
+                                            onClick = {
+                                                // Elimina la tarjeta y quita la imagen del arreglo.
+                                                imageUris = imageUris.filter { it != uri }
+                                                videoUris = videoUris.filter { it != uri }
+                                                val u = Uri.parse(uri.toString())
+                                                viewModel.removeUri(u)
+                                            },
+                                            modifier = Modifier.align(Alignment.End)
+                                        ) {
+                                            Text("Eliminar")
+                                        }
+                                    }
+                                }
                             }
                         }
                         2 -> { // Renderiza los nuevos elementos aquí
-                            Text(text = "Nuevos elementos", fontSize= 20.sp, fontWeight = FontWeight.Bold)
+                            Text(text = "Nuevos elementos", fontSize = 20.sp, fontWeight = FontWeight.Bold)
                             Spacer(modifier = Modifier.height(16.dp))
                             list.forEach { uri ->
-                                if (uri in imageUris) {
-                                    AsyncImage(
-                                        model = uri,
-                                        modifier = Modifier
-                                            .height(300.dp)
-                                            .width(300.dp)
-                                            .align(CenterHorizontally),
-                                        contentDescription = "Selected image",
-                                    )
-                                    Spacer(modifier = Modifier.height(16.dp))
-
-                                } else if (uri in videoUris) {
-                                    val parsedUri = Uri.parse(uri.toString())
-                                    VideoPlayer(
-                                        videoUri = parsedUri,
-                                        modifier = Modifier
-                                            .height(300.dp)
-                                            .width(300.dp)
-                                            .align(CenterHorizontally)
-                                    )
-                                    Spacer(modifier = Modifier.height(16.dp))
-
+                                Card(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(8.dp)
+                                ) {
+                                    Column {
+                                        if (uri in imageUris) {
+                                            AsyncImage(
+                                                model = uri,
+                                                modifier = Modifier
+                                                    .height(400.dp)
+                                                    .fillMaxWidth()
+                                                    .align(CenterHorizontally),
+                                                contentDescription = "Selected image",
+                                            )
+                                        } else if (uri in videoUris) {
+                                            val parsedUri = Uri.parse(uri.toString())
+                                            VideoPlayer(
+                                                videoUri = parsedUri,
+                                                modifier = Modifier
+                                                    .height(400.dp)
+                                                    .fillMaxWidth()
+                                                    .align(CenterHorizontally)
+                                            )
+                                        }
+                                        Spacer(modifier = Modifier.height(16.dp))
+                                        // Agrega el TextField para la descripción aquí
+//                                        TextField(
+//                                            value = viewModel.notaMultimediaUiState.notaMultimediaDetails.descripcion,
+//                                            onValueChange = { newDescription ->
+//                                                viewModel.setNotaMultimediaUiState(
+//                                                    viewModel.notaMultimediaUiState.copy(
+//                                                        notaMultimediaDetails = viewModel.notaMultimediaUiState.notaMultimediaDetails.copy(descripcion = newDescription)
+//                                                    )
+//                                                )
+//                                            },
+//                                            label = { Text("Descripción") },
+//                                            modifier = Modifier.fillMaxWidth(),
+//                                            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done)
+//                                        )
+//                                        Spacer(modifier = Modifier.height(16.dp))
+                                        // Agrega el botón aquí
+                                        Button(
+                                            onClick = {
+                                                // Elimina la tarjeta y quita la imagen del arreglo.
+                                                imageUris = imageUris.filter { it != uri }
+                                                videoUris = videoUris.filter { it != uri }
+                                                val u = Uri.parse(uri.toString())
+                                                viewModel.removeUri(u)
+                                            },
+                                            modifier = Modifier.align(Alignment.End)
+                                        ) {
+                                            Text(stringResource(R.string.delete))
+                                        }
+                                    }
                                 }
                             }
                         }

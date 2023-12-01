@@ -37,6 +37,7 @@ import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material3.Button
+import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -293,33 +294,59 @@ fun EditorTareas(
             }
         }
         Spacer(modifier = Modifier.height(16.dp))//MOSTRAR MULTIMEDIA
-        Box(
-            modifier = modifier,
-        ) {
-            LazyColumn (modifier = Modifier.align(Alignment.Center)) {
+        Box(modifier = modifier) {
+            LazyColumn(modifier = Modifier.align(Alignment.Center)) {
                 items(imageUris + videoUris) { uri ->
-                    if (uri in imageUris) {
-                        AsyncImage(
-                            model = uri,
-                            modifier = Modifier
-                                .height(400.dp)
-                                .width(300.dp)
-                                .align(Alignment.Center),
-                            contentDescription = "Selected image",
-                        )
-                        Spacer(modifier = Modifier.height(16.dp))
-
-                    } else if (uri in videoUris) {
-                        VideoPlayer(
-                            videoUri = uri,
-                            modifier = Modifier
-                                .height(400.dp)
-                                .width(300.dp)
-                                .align(Alignment.Center)
-                        )
-                        Spacer(modifier = Modifier.height(16.dp))
+                    Card(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(8.dp)
+                    ) {
+                        Column {
+                            if (uri in imageUris) {
+                                AsyncImage(
+                                    model = uri,
+                                    modifier = Modifier
+                                        .height(400.dp)
+                                        .fillMaxWidth(),
+                                    contentDescription = "Selected image",
+                                )
+                            } else if (uri in videoUris) {
+                                VideoPlayer(
+                                    videoUri = uri,
+                                    modifier = Modifier
+                                        .height(400.dp)
+                                        .fillMaxWidth()
+                                )
+                            }
+                            // Obtén la descripción actual del ViewModel
+//                            TextField(
+//                                value = viewModel.notaMultimediaUiState.notaMultimediaDetails.descripcion,
+//                                onValueChange = { newDescription ->
+//                                    viewModel.setNotaMultimediaUiState(
+//                                        viewModel.notaMultimediaUiState.copy(
+//                                            notaMultimediaDetails = viewModel.notaMultimediaUiState.notaMultimediaDetails.copy(descripcion = newDescription)
+//                                        )
+//                                    )
+//                                },
+//                                label = { Text("Descripción") },
+//                                modifier = Modifier.fillMaxWidth(),
+//                                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done)
+//                            )
+                            Button(
+                                onClick = {
+                                    // Elimina la tarjeta y quita la imagen del arreglo.
+                                    imageUris = imageUris.filter { it != uri }
+                                    videoUris = videoUris.filter { it != uri }
+                                    viewModel.removeUri(uri)
+                                },
+                                modifier = Modifier.align(Alignment.End)
+                            ) {
+                                Text(stringResource(R.string.delete))
+                            }
+                        }
                     }
-                    //Text(text = "URI: $uri", modifier = Modifier.padding(8.dp))
+                    Spacer(modifier = Modifier.height(16.dp))
                 }
             }
         }
@@ -414,8 +441,11 @@ fun DatePicker(onDateSelected: (String) -> Unit) {
     val mDatePickerDialog = DatePickerDialog(
         LocalContext.current,
         { _, anio: Int, mes: Int, dia: Int ->
-            fecha = "$anio-${mes + 1}-$dia"
-            onDateSelected(fecha) // Llamar a la función de devolución de llamada con la fecha seleccionada
+            // Formatear el día y el mes para asegurarse de que siempre tengan dos dígitos
+            val formattedDay = String.format("%02d", dia)
+            val formattedMonth = String.format("%02d", mes + 1)
+            fecha = "$anio-$formattedMonth-$formattedDay"
+            onDateSelected(fecha)
         },
         anio,
         mes,
@@ -435,6 +465,7 @@ fun DatePicker(onDateSelected: (String) -> Unit) {
 }
 
 
+
 @Composable
 fun TimePicker(onTimeSelected: (String) -> Unit, isEnabled: Boolean) {
     var hora by rememberSaveable { mutableStateOf("") }
@@ -446,7 +477,10 @@ fun TimePicker(onTimeSelected: (String) -> Unit, isEnabled: Boolean) {
     val timePickerDialog = TimePickerDialog(
         LocalContext.current,
         { _, hourOfDay: Int, minuteOfDay: Int ->
-            hora = String.format("%02d:%02d:%02d", hourOfDay, minuteOfDay, second)
+            // Formatear la hora y los minutos, y asignar siempre "00" a los segundos
+            val formattedHour = String.format("%02d", hourOfDay)
+            val formattedMinute = String.format("%02d", minuteOfDay)
+            hora = "$formattedHour:$formattedMinute:00"
             onTimeSelected(hora)
         }, hour, minute, false
     )
@@ -469,10 +503,11 @@ fun TimePicker(onTimeSelected: (String) -> Unit, isEnabled: Boolean) {
             modifier = Modifier
                 .size(32.dp)
                 .padding(0.dp)
-                .alpha(0.5f) //Opacidad
+                .alpha(0.5f) // Opacidad
         )
     }
 }
+
 
 //NOTIFICACIONES
 

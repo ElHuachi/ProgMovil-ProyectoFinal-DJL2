@@ -15,6 +15,9 @@ interface TareaDAO {
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insert(tarea: Tarea)
 
+    @Insert
+    suspend fun insertAndGetId(tarea: Tarea): Long
+
     @Update
     suspend fun update(tarea: Tarea)
 

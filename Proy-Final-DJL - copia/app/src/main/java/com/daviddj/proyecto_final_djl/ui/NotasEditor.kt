@@ -201,7 +201,6 @@ fun EditorNotas(
                     val uri = ComposeFileProvider.getVideoUri(context)
                     videoUri = uri
                     videoLauncher.launch(uri)
-
                 } ) {
                 Image(
                     modifier = Modifier

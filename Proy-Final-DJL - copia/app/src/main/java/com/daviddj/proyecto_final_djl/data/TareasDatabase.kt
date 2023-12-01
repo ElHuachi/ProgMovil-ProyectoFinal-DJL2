@@ -4,11 +4,15 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import com.daviddj.proyecto_final_djl.model.NotaMultimedia
 import com.daviddj.proyecto_final_djl.model.Tarea
+import com.daviddj.proyecto_final_djl.model.TareaMultimedia
 
-@Database(entities = [Tarea::class], version = 5, exportSchema = false)
+@Database(entities = [Tarea::class, TareaMultimedia::class], version = 9, exportSchema = false)
 abstract class TareasDatabase : RoomDatabase() {
     abstract fun tareaDao(): TareaDAO
+
+    abstract fun tareaMultimediaDao(): TareaMultimediaDAO
 
     companion object {
         @Volatile

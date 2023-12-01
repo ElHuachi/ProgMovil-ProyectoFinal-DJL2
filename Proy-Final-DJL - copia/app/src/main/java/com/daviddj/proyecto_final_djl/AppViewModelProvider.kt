@@ -27,7 +27,9 @@ object AppViewModelProvider{
         }
 
         initializer {
-            TareasEditorViewModel(notasApplication().container.tareasRepository)
+            TareasEditorViewModel(notasApplication().container.tareasRepository,
+                notasApplication().container.tareasMultimediaRepository
+            )
         }
 
         initializer {
@@ -63,7 +65,8 @@ object AppViewModelProvider{
         initializer {
             UpdateTareaViewModel(
                 this.createSavedStateHandle(),
-                notasApplication().container.tareasRepository
+                notasApplication().container.tareasRepository,
+                notasApplication().container.tareasMultimediaRepository
             )
         }
     }
