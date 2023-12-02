@@ -38,6 +38,8 @@ class NotasEditorViewModel(private val notasRepository: NotasRepository,
 
     var imageUris by mutableStateOf(listOf<Uri>())
     var videoUris by mutableStateOf(listOf<Uri>())
+    var audioUris by mutableStateOf(listOf<Uri>())
+
 
     @RequiresApi(Build.VERSION_CODES.O)
     fun updateUiState(notaDetails: NotaDetails) {
@@ -93,29 +95,22 @@ class NotasEditorViewModel(private val notasRepository: NotasRepository,
                 )
                 notasMultimediaRepository.insertItem(notaMultimedia)
             }
+
+            for (uri in audioUris) {
+                val multimediaDescription = multimediaDescriptions
+                    .firstOrNull { it.uri == uri }
+                    ?: MultimediaDescription(uri, "Sin descripción")
+
+                val notaMultimedia = NotaMultimedia(
+                    uri = uri.toString(),
+                    descripcion = multimediaDescription.descripcion,
+                    notaId = notaId.toInt(),
+                    tipo = "audio"
+                )
+                notasMultimediaRepository.insertItem(notaMultimedia)
+            }
         }
     }
-
-
-    //    suspend fun saveNota() {
-//        if (validateInput()) {
-//            // Guarda la nota y obtén el ID.
-//            val notaId = notasRepository.insertItem(notaUiState.notaDetails.toItem())
-//
-//            // Guarda los archivos multimedia con el ID de la nota.
-//            for (uri in imageUris + videoUris) {
-//                val notaMultimedia = NotaMultimedia(
-//                    uri = uri.toString(),
-//                    descripcion = "Descripción del archivo",
-//                    notaId = notaId
-//                )
-//                notasMultimediaRepository.insertItem(notaMultimedia)
-//
-//                }
-//            }
-//
-//        }
-
 }
 
 
@@ -171,7 +166,6 @@ data class NotaMultimediaDetails(
     var notaId: Int = 0,
     var tipo: String = ""
 )
-
 
 fun NotaMultimediaDetails.toItem(): NotaMultimedia = NotaMultimedia(
     id = id,

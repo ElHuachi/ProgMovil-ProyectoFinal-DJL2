@@ -9,9 +9,7 @@ import android.os.Build
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
-import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -23,14 +21,13 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.outlined.CheckCircle
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
@@ -41,7 +38,6 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -50,12 +46,11 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.zIndex
 import androidx.core.net.toUri
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
@@ -93,6 +88,10 @@ fun EditorNotas(
     val coroutineScope = rememberCoroutineScope()
     var imageUris by remember { mutableStateOf(listOf<Uri>()) }
     var videoUris by remember { mutableStateOf(listOf<Uri>()) }
+    var audioUris by remember { mutableStateOf(listOf<Uri>()) }
+
+    val context = LocalContext.current
+    val audioRecorder = AndroidAudioRecorder(context)
 
     //MULTIMEDIA
     var imageUri by remember {
@@ -132,7 +131,6 @@ fun EditorNotas(
         }
     )
 
-    val context = LocalContext.current
     //MULTIMEDIA
 
     //AUDIO
@@ -219,24 +217,53 @@ fun EditorNotas(
                     contentDescription = null
                 )
             }
-            Button(onClick = { /*TODO*/ }) {
-                Image(
-                    modifier = Modifier
-                        .size(35.dp)
-                        .padding(4.dp),
-                    painter = painterResource(R.drawable.microfono),
-                    contentDescription = null
-                )
+        }
+        Spacer(modifier = Modifier.height(16.dp))//MOSTRAR MULTIMEDIA
+        Row{
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                //.animateContentSize(),
+                //verticalArrangement = Arrangement.spacedBy(16.dp),
+            ) {
+                // Show rationale dialog when needed
+                rationaleState?.run { PermissionRationaleDialog(rationaleState = this) }
+
+                PermissionRequestButton(
+                    isGranted = recordAudioPermissionState.status.isGranted,
+                    title = stringResource(R.string.record_audio),
+                    onClickStGra,
+                    onClickSpGra,
+                    onClickStRe,
+                    onClickSpRe
+                ) {
+                    if (recordAudioPermissionState.status.shouldShowRationale) {
+                        rationaleState = RationaleState(
+                            "Permiso para grabar audio",
+                            "In order to use this feature please grant access by accepting " + "the grabar audio dialog." + "\n\nWould you like to continue?",
+                        ) { proceed ->
+                            if (proceed) {
+                                recordAudioPermissionState.launchPermissionRequest()
+                            }
+                            rationaleState = null
+                        }
+                    } else {
+                        recordAudioPermissionState.launchPermissionRequest()
+                    }
+                }
+
+
             }
         }
         Spacer(modifier = Modifier.height(16.dp))//MOSTRAR MULTIMEDIA
-        Box(modifier = modifier) {
+        Box {
             LazyColumn(modifier = Modifier.align(Alignment.Center)) {
                 items(imageUris + videoUris) { uri ->
                     Card(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(8.dp)
+                            .zIndex(0f)
                     ) {
                         Column {
                             if (uri in imageUris) {
@@ -286,42 +313,84 @@ fun EditorNotas(
                 }
             }
         }
-
+        //Spacer(modifier = Modifier.height(16.dp))
     }
 }
 
 @Composable
-fun PermissionRequestButton(isGranted: Boolean, title: String,
-                            onClickStGra: () -> Unit,
-                            onClickSpGra: () -> Unit,
-                            onClickStRe: () -> Unit,
-                            onClickSpRe: () -> Unit,
-                            onClick: () -> Unit) {
+fun PermissionRequestButton(
+    isGranted: Boolean, title: String,
+    onClickStGra: () -> Unit,
+    onClickSpGra: () -> Unit,
+    onClickStRe: () -> Unit,
+    onClickSpRe: () -> Unit,
+    onClick: () -> Unit) {
     if (isGranted) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Icon(Icons.Outlined.CheckCircle, title, modifier = Modifier.size(48.dp))
-            Spacer(Modifier.size(10.dp))
-            Text(text = title, modifier = Modifier.background(Color.Transparent))
-            Spacer(Modifier.size(10.dp))
-
-        }
-        Row {
+//        Row(
+//            modifier = Modifier
+//                .fillMaxWidth()
+//                .padding(16.dp),
+//            verticalAlignment = Alignment.CenterVertically
+//        ) {
+//            Icon(Icons.Outlined.CheckCircle, title, modifier = Modifier.size(48.dp))
+//            Spacer(Modifier.size(10.dp))
+//            Text(text = title, modifier = Modifier.background(Color.Transparent))
+//            Spacer(Modifier.size(10.dp))
+//
+//        }
+        Row(modifier = Modifier
+            .fillMaxWidth()
+            .wrapContentSize(Alignment.Center)
+        ){
             Button(onClick = onClickStGra) {
-                Text("Grabar")
+                //Text("Grabar")
+                Image(
+                    modifier = Modifier
+                        .size(25.dp)
+                        .padding(2.dp),
+                    painter = painterResource(R.drawable.microfono_grabador),
+                    contentDescription = null
+                )
             }
-            Button(onClick = onClickSpGra) {
-                Text("Parar")
+            Spacer(modifier = Modifier.width(20.dp))
+            Button(onClick = onClickSpGra
+//                val uri = audioRecorder.getUri()
+//                if (uri != null) {
+//                    //audioUris = audioUris.plus(uri)
+//                }
+            ) {
+                Image(
+                    modifier = Modifier
+                        .size(25.dp)
+                        .padding(2.dp),
+                    painter = painterResource(R.drawable.cuadra),
+                    contentDescription = null
+                )
             }
+        }
+        Spacer(modifier = Modifier.height(4.dp))
+        Row(modifier = Modifier
+            .fillMaxWidth()
+            .wrapContentSize(Alignment.Center)
+        ){
             Button(onClick = onClickStRe) {
-                Text("Reproducir")
+                Image(
+                    modifier = Modifier
+                        .size(25.dp)
+                        .padding(2.dp),
+                    painter = painterResource(R.drawable.boton_de_play),
+                    contentDescription = null
+                )
             }
+            Spacer(modifier = Modifier.width(20.dp))
             Button(onClick = onClickSpRe) {
-                Text("Parar")
+                Image(
+                    modifier = Modifier
+                        .size(25.dp)
+                        .padding(2.dp),
+                    painter = painterResource(R.drawable.boton_detener),
+                    contentDescription = null
+                )
             }
         }
     } else {
@@ -364,8 +433,7 @@ data class RationaleState(
 interface AudioRecorder {
     fun start(outputFile: File)
     fun stop()
-}
-class AndroidAudioRecorder(
+} class AndroidAudioRecorder(
     private val context: Context
 ): AudioRecorder {
 
