@@ -1,5 +1,6 @@
 package com.daviddj.proyecto_final_djl.ui
 
+import android.Manifest
 import android.annotation.SuppressLint
 import android.net.Uri
 import android.os.Build
@@ -8,7 +9,6 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -16,37 +16,27 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.modifier.modifierLocalConsumer
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import com.daviddj.proyecto_final_djl.AppViewModelProvider
@@ -55,9 +45,12 @@ import com.daviddj.proyecto_final_djl.InventoryTopAppBar
 import com.daviddj.proyecto_final_djl.NavigationDestination
 import com.daviddj.proyecto_final_djl.R
 import com.daviddj.proyecto_final_djl.VideoPlayer
-import com.daviddj.proyecto_final_djl.model.NotaMultimedia
+import com.daviddj.proyecto_final_djl.viewModel.NotasEditorViewModel
 import com.daviddj.proyecto_final_djl.viewModel.UpdateNotaViewModel
-import kotlinx.coroutines.flow.MutableStateFlow
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.isGranted
+import com.google.accompanist.permissions.rememberPermissionState
+import com.google.accompanist.permissions.shouldShowRationale
 import kotlinx.coroutines.launch
 
 object NotaEditDestination : NavigationDestination {
@@ -69,13 +62,18 @@ object NotaEditDestination : NavigationDestination {
 
 @SuppressLint("UnrememberedMutableState")
 @RequiresApi(Build.VERSION_CODES.O)
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalPermissionsApi::class)
 @Composable
 fun UpdateNotaScreen(
     navigateBack: () -> Unit,
     onNavigateUp: () -> Unit,
     modifier: Modifier = Modifier,
-    viewModel: UpdateNotaViewModel = viewModel(factory = AppViewModelProvider.Factory)
+    viewModel: UpdateNotaViewModel = viewModel(factory = AppViewModelProvider.Factory),
+    viewModel2: NotasEditorViewModel = viewModel(factory = AppViewModelProvider.Factory),
+    onClickStGra: () -> Unit,
+    onClickSpGra: () -> Unit,
+    onClickStRe: () -> Unit,
+    onClickSpRe: () -> Unit,
 ) {
 
     val coroutineScope = rememberCoroutineScope()
@@ -90,6 +88,16 @@ fun UpdateNotaScreen(
 
     var videoUri by remember {
         mutableStateOf<Uri?>(null)
+    }
+
+    //AUDIO
+    val recordAudioPermissionState = rememberPermissionState(
+        Manifest.permission.RECORD_AUDIO
+    )
+
+    //Realiza un seguimiento del estado del diálogo de justificación, necesario cuando el usuario requiere más justificación
+    var rationaleState by remember {
+        mutableStateOf<RationaleState?>(null)
     }
 
     val imagePicker = rememberLauncherForActivityResult(
@@ -195,18 +203,43 @@ fun UpdateNotaScreen(
                         contentDescription = null
                     )
                 }
-                Button(onClick = { /*TODO*/ }) {
-                    Image(
-                        modifier = Modifier
-                            .size(35.dp)
-                            .padding(4.dp),
-                        painter = painterResource(R.drawable.microfono),
-                        contentDescription = null
-                    )
+            }
+            Spacer(modifier = Modifier.height(16.dp))//GRABAR AUDIOS
+            Row{
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                    //.animateContentSize(),
+                    //verticalArrangement = Arrangement.spacedBy(16.dp),
+                ) {
+                    // Show rationale dialog when needed
+                    rationaleState?.run { PermissionRationaleDialog(rationaleState = this) }
+                    var viewM: NotasEditorViewModel
+                    PermissionRequestButton(
+                        isGranted = recordAudioPermissionState.status.isGranted,
+                        title = stringResource(R.string.record_audio),
+                        onClickStGra,
+                        onClickSpGra,
+                        viewModel.audioUris,
+                        viewModel2
+                    ){
+                        if (recordAudioPermissionState.status.shouldShowRationale) {
+                            rationaleState = RationaleState(
+                                "Permiso para grabar audio",
+                                "In order to use this feature please grant access by accepting " + "the grabar audio dialog." + "\n\nWould you like to continue?",
+                            ) { proceed ->
+                                if (proceed) {
+                                    recordAudioPermissionState.launchPermissionRequest()
+                                }
+                                rationaleState = null
+                            }
+                        } else {
+                            recordAudioPermissionState.launchPermissionRequest()
+                        }
+                    }
                 }
             }
             Spacer(modifier = Modifier.height(16.dp))        //MOSTRAR MULTIMEDIA
-
             val imagenesCargadas = viewModel.notaUiState.notaDetails.imageUris.split(",")
             val videosCargados = viewModel.notaUiState.notaDetails.videoUris.split(",")
             val audiosCargados = viewModel.notaUiState.notaDetails.audioUris.split(",")
@@ -310,16 +343,63 @@ fun UpdateNotaScreen(
                             }
                         }
                         2 -> { //AUDIOS
-                            Text(text = stringResource(R.string.audios), fontSize = 20.sp, fontWeight = FontWeight.Bold)
-                            Spacer(modifier = Modifier.height(16.dp))
                             list.forEach { uri ->
                                 Card(
                                     modifier = Modifier
                                         .fillMaxWidth()
                                         .padding(8.dp)
                                 ) {
-                                    Row{
-
+                                    Column {
+                                        Row{
+                                            val audioPlayer2 = AndroidAudioPlayer2(context,Uri.parse(uri.toString()))
+                                            PermissionRequestButton2(
+                                                isGranted = recordAudioPermissionState.status.isGranted,
+                                                title = stringResource(R.string.record_audio),
+                                                onClickSpGra,
+                                                onClickStRe,
+                                                onClickStRe = {
+                                                    audioPlayer2.start(Uri.parse(uri.toString()))
+                                                },
+                                                onClickSpRe = {
+                                                    audioPlayer2.stop()
+                                                },
+                                                viewModel.audioUris,
+                                            ){
+                                                if (recordAudioPermissionState.status.shouldShowRationale) {
+                                                    rationaleState = RationaleState(
+                                                        "Permiso para grabar audio",
+                                                        "In order to use this feature please grant access by accepting " + "the grabar audio dialog." + "\n\nWould you like to continue?",
+                                                    ) { proceed ->
+                                                        if (proceed) {
+                                                            recordAudioPermissionState.launchPermissionRequest()
+                                                        }
+                                                        rationaleState = null
+                                                    }
+                                                } else {
+                                                    recordAudioPermissionState.launchPermissionRequest()
+                                                }
+                                            }
+                                        }
+                                        //Spacer(modifier = Modifier.height(16.dp))
+                                        Button(
+                                            onClick = {
+                                                // Elimina la tarjeta y quita la imagen del arreglo.
+                                                imageUris = imageUris.filter { it != uri }
+                                                videoUris = videoUris.filter { it != uri }
+                                                val u = Uri.parse(uri.toString())
+                                                viewModel.removeUri(u)
+                                            },
+                                            modifier = Modifier.align(Alignment.End)
+                                        ) {
+                                            //Text(stringResource(R.string.delete))
+                                            Image(
+                                                modifier = Modifier
+                                                    .size(25.dp)
+                                                    .padding(2.dp),
+                                                painter = painterResource(R.drawable.eliminar),
+                                                contentDescription = null
+                                            )
+                                        }
                                     }
                                 }
                             }
@@ -352,6 +432,36 @@ fun UpdateNotaScreen(
                                                     .fillMaxWidth()
                                                     .align(Alignment.CenterHorizontally)
                                             )
+                                        } else if (uri in viewModel.audioUris) {
+                                            val parsedUri = Uri.parse(uri.toString())
+                                            val audioPlayer2 = AndroidAudioPlayer2(context,parsedUri)
+                                            PermissionRequestButton2(
+                                                isGranted = recordAudioPermissionState.status.isGranted,
+                                                title = stringResource(R.string.record_audio),
+                                                onClickSpGra,
+                                                onClickStRe,
+                                                onClickStRe = {
+                                                    audioPlayer2.start(parsedUri)
+                                                },
+                                                onClickSpRe = {
+                                                    audioPlayer2.stop()
+                                                },
+                                                viewModel.audioUris,
+                                            ){
+                                                if (recordAudioPermissionState.status.shouldShowRationale) {
+                                                    rationaleState = RationaleState(
+                                                        "Permiso para grabar audio",
+                                                        "In order to use this feature please grant access by accepting " + "the grabar audio dialog." + "\n\nWould you like to continue?",
+                                                    ) { proceed ->
+                                                        if (proceed) {
+                                                            recordAudioPermissionState.launchPermissionRequest()
+                                                        }
+                                                        rationaleState = null
+                                                    }
+                                                } else {
+                                                    recordAudioPermissionState.launchPermissionRequest()
+                                                }
+                                            }
                                         }
                                         Spacer(modifier = Modifier.height(16.dp))
                                         // Agrega el TextField para la descripción aquí

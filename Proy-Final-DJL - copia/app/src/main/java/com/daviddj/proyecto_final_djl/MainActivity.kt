@@ -179,8 +179,19 @@ class MainActivity : ComponentActivity() {
                     ) {
                         UpdateNotaScreen(
                             navigateBack = { navController.popBackStack() },
-                            onNavigateUp = { navController.navigateUp() }
-                        )
+                            onNavigateUp = { navController.navigateUp() },
+                            onClickStGra = {
+                                i++
+                                var idAudio = i.toString()
+                                var fileName = "audio$idAudio.mp3"
+                                File(context.cacheDir, fileName).also {
+                                    recorder.start(it)
+                                    audioFile = it
+                                }
+                            },
+                            onClickSpGra = { recorder.stop() },
+                            onClickStRe = { audioFile?.let { player.start(it) } },
+                            onClickSpRe = { player.stop() })
                     }
                     composable(Routes.NotasEditor.route) {
                         EditorNotas(

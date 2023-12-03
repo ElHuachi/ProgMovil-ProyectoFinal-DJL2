@@ -28,6 +28,7 @@ class UpdateNotaViewModel(
 
     var imageUris by mutableStateOf(listOf<Uri>())
     var videoUris by mutableStateOf(listOf<Uri>())
+    var audioUris by mutableStateOf(listOf<Uri>())
 
     private val _notaMultimediaUiState = mutableStateOf(NotaMultimediaUiState())
     val notaMultimediaUiState: NotaMultimediaUiState
@@ -40,6 +41,8 @@ class UpdateNotaViewModel(
     fun removeUri(uri: Uri) {
         imageUris = imageUris.filter { it != uri }
         videoUris = videoUris.filter { it != uri }
+        audioUris = audioUris.filter { it != uri }
+
     }
 
     var notaUiState by mutableStateOf(NotaUiState())

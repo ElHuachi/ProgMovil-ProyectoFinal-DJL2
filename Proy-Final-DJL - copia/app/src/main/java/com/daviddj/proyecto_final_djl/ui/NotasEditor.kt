@@ -63,6 +63,7 @@ import com.daviddj.proyecto_final_djl.VideoPlayer
 import com.daviddj.proyecto_final_djl.viewModel.NotaDetails
 import com.daviddj.proyecto_final_djl.viewModel.NotaUiState
 import com.daviddj.proyecto_final_djl.viewModel.NotasEditorViewModel
+import com.daviddj.proyecto_final_djl.viewModel.UpdateNotaViewModel
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
@@ -285,18 +286,19 @@ fun EditorNotas(
                                         .fillMaxWidth()
                                 )
                             } else if (uri in viewModel.audioUris) {
+                                val audioPlayer2 = AndroidAudioPlayer2(context,uri)
                                 PermissionRequestButton2(
                                     isGranted = recordAudioPermissionState.status.isGranted,
                                     title = stringResource(R.string.record_audio),
                                     onClickSpGra,
                                     onClickStRe,
                                     onClickStRe = {
-                                        val audioPlayer2 = AndroidAudioPlayer2(context,uri)
                                         audioPlayer2.start(uri)
                                     },
-                                    onClickSpRe,
+                                    onClickSpRe = {
+                                        audioPlayer2.stop()
+                                    },
                                     viewModel.audioUris,
-                                    viewModel
                                 ){
                                     if (recordAudioPermissionState.status.shouldShowRationale) {
                                         rationaleState = RationaleState(
@@ -413,7 +415,6 @@ fun PermissionRequestButton2(
     onClickStRe: () -> Unit,
     onClickSpRe: () -> Unit,
     audioUris: List<Uri>,
-    notasEditorViewModel: NotasEditorViewModel,
     function: () -> Unit
 ) {
     if (isGranted) {
