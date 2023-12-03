@@ -26,6 +26,12 @@ class TareasEditorViewModel(private val tareasRepository: TareasRepository,
     var multimediaDescriptions by mutableStateOf(mutableListOf<MultimediaDescription>())
 
 
+    var mensaje = mutableStateOf("")
+
+    fun updateMensaje(nuevoMensaje: String) {
+        mensaje.value = nuevoMensaje
+    }
+
     //var notaMultimediaUiState by mutableStateOf(NotaMultimediaUiState())
 
     private val _tareaMultimediaUiState = mutableStateOf(TareaMultimediaUiState())

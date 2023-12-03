@@ -160,17 +160,11 @@ fun UpdateTareaScreen(
                 Text(text = stringResource(R.string.recordatorio),fontWeight = FontWeight.Bold)
                 Spacer(modifier = Modifier.width(8.dp))
                 Button(onClick = {
-                    /*alarmItem =
-                       AlarmItem(
-                           alarmTime = LocalDateTime.now().plusSeconds(
-                               secondText.toLong()
-                           ),
-                           message = messageText
-                       )*/
+                    viewModel.updateMensaje(viewModel.tareaUiState.tareaDetails.name)
                     alarmItem = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                         AlarmItem(
                             LocalDateTime.now().plusSeconds(1000),
-                            "",
+                            viewModel.mensaje.value,
                             selectedDate,
                             selectedTime
                         )
@@ -196,6 +190,7 @@ fun UpdateTareaScreen(
                 tareaUiState = viewModel.tareaUiState,
                 onTareaValueChange = { updatedTareaDetails ->
                     val combinedDateTime = "$selectedDate $selectedTime"
+                    //viewModel.updateMensaje(viewModel.tareaUiState.tareaDetails.name)
                     viewModel.updateUiState(updatedTareaDetails, combinedDateTime)
                 },
                 onSaveClick = {
@@ -303,7 +298,14 @@ fun UpdateTareaScreen(
                                             },
                                             modifier = Modifier.align(Alignment.End)
                                         ) {
-                                            Text("Eliminar")
+                                            //Text("Eliminar")
+                                            Image(
+                                                modifier = Modifier
+                                                    .size(25.dp)
+                                                    .padding(2.dp),
+                                                painter = painterResource(R.drawable.eliminar),
+                                                contentDescription = null
+                                            )
                                         }
                                     }
                                 }
@@ -337,7 +339,14 @@ fun UpdateTareaScreen(
                                             },
                                             modifier = Modifier.align(Alignment.End)
                                         ) {
-                                            Text("Eliminar")
+                                            //Text("Eliminar")
+                                            Image(
+                                                modifier = Modifier
+                                                    .size(25.dp)
+                                                    .padding(2.dp),
+                                                painter = painterResource(R.drawable.eliminar),
+                                                contentDescription = null
+                                            )
                                         }
                                     }
                                 }
@@ -399,7 +408,14 @@ fun UpdateTareaScreen(
                                             },
                                             modifier = Modifier.align(Alignment.End)
                                         ) {
-                                            Text(stringResource(R.string.delete))
+                                            //Text(stringResource(R.string.delete))
+                                            Image(
+                                                modifier = Modifier
+                                                    .size(25.dp)
+                                                    .padding(2.dp),
+                                                painter = painterResource(R.drawable.eliminar),
+                                                contentDescription = null
+                                            )
                                         }
                                     }
                                 }

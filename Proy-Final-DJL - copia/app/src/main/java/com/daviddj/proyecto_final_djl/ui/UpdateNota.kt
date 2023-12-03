@@ -254,7 +254,14 @@ fun UpdateNotaScreen(
                                             },
                                             modifier = Modifier.align(Alignment.End)
                                         ) {
-                                            Text("Eliminar")
+                                            //Text("Eliminar")
+                                            Image(
+                                                modifier = Modifier
+                                                    .size(25.dp)
+                                                    .padding(2.dp),
+                                                painter = painterResource(R.drawable.eliminar),
+                                                contentDescription = null
+                                            )
                                         }
                                     }
                                 }
@@ -288,7 +295,14 @@ fun UpdateNotaScreen(
                                             },
                                             modifier = Modifier.align(Alignment.End)
                                         ) {
-                                            Text("Eliminar")
+                                            //Text("Eliminar")
+                                            Image(
+                                                modifier = Modifier
+                                                    .size(25.dp)
+                                                    .padding(2.dp),
+                                                painter = painterResource(R.drawable.eliminar),
+                                                contentDescription = null
+                                            )
                                         }
                                     }
                                 }
@@ -350,19 +364,23 @@ fun UpdateNotaScreen(
                                             },
                                             modifier = Modifier.align(Alignment.End)
                                         ) {
-                                            Text(stringResource(R.string.delete))
+                                            //Text(stringResource(R.string.delete))
+                                            Image(
+                                                modifier = Modifier
+                                                    .size(25.dp)
+                                                    .padding(2.dp),
+                                                painter = painterResource(R.drawable.eliminar),
+                                                contentDescription = null
+                                            )
                                         }
                                     }
                                 }
                             }
                         }
-
                     }
                 }
             }
-
         }
-
     }
 }
 

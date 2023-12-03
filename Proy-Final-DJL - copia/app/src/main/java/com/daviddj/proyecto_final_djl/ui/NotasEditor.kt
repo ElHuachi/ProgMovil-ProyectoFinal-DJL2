@@ -251,8 +251,6 @@ fun EditorNotas(
                         recordAudioPermissionState.launchPermissionRequest()
                     }
                 }
-
-
             }
         }
         Spacer(modifier = Modifier.height(16.dp))//MOSTRAR MULTIMEDIA
@@ -305,7 +303,14 @@ fun EditorNotas(
                                 },
                                 modifier = Modifier.align(Alignment.End)
                             ) {
-                                Text(stringResource(R.string.delete))
+                                //Text(stringResource(R.string.delete))
+                                Image(
+                                    modifier = Modifier
+                                        .size(25.dp)
+                                        .padding(2.dp),
+                                    painter = painterResource(R.drawable.eliminar),
+                                    contentDescription = null
+                                )
                             }
                         }
                     }
@@ -326,18 +331,6 @@ fun PermissionRequestButton(
     onClickSpRe: () -> Unit,
     onClick: () -> Unit) {
     if (isGranted) {
-//        Row(
-//            modifier = Modifier
-//                .fillMaxWidth()
-//                .padding(16.dp),
-//            verticalAlignment = Alignment.CenterVertically
-//        ) {
-//            Icon(Icons.Outlined.CheckCircle, title, modifier = Modifier.size(48.dp))
-//            Spacer(Modifier.size(10.dp))
-//            Text(text = title, modifier = Modifier.background(Color.Transparent))
-//            Spacer(Modifier.size(10.dp))
-//
-//        }
         Row(modifier = Modifier
             .fillMaxWidth()
             .wrapContentSize(Alignment.Center)
@@ -353,12 +346,7 @@ fun PermissionRequestButton(
                 )
             }
             Spacer(modifier = Modifier.width(20.dp))
-            Button(onClick = onClickSpGra
-//                val uri = audioRecorder.getUri()
-//                if (uri != null) {
-//                    //audioUris = audioUris.plus(uri)
-//                }
-            ) {
+            Button(onClick = onClickSpGra) {
                 Image(
                     modifier = Modifier
                         .size(25.dp)
@@ -448,6 +436,7 @@ interface AudioRecorder {
 
     override fun start(outputFile: File) {
         createRecorder().apply {
+            //viewModel.outputFile = outputFile
             setAudioSource(MediaRecorder.AudioSource.MIC)
             setOutputFormat(MediaRecorder.OutputFormat.MPEG_4)
             setAudioEncoder(MediaRecorder.AudioEncoder.AAC)

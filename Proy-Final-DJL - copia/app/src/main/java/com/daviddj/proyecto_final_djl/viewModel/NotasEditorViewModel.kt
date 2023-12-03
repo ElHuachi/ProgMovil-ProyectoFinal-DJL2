@@ -11,6 +11,7 @@ import com.daviddj.proyecto_final_djl.data.NotaMultimediaRepository
 import com.daviddj.proyecto_final_djl.data.NotasRepository
 import com.daviddj.proyecto_final_djl.model.Nota
 import com.daviddj.proyecto_final_djl.model.NotaMultimedia
+import java.io.File
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
@@ -35,6 +36,7 @@ class NotasEditorViewModel(private val notasRepository: NotasRepository,
         _notaMultimediaUiState.value = newUiState
     }
 
+    var outputFile: File? = null
 
     var imageUris by mutableStateOf(listOf<Uri>())
     var videoUris by mutableStateOf(listOf<Uri>())

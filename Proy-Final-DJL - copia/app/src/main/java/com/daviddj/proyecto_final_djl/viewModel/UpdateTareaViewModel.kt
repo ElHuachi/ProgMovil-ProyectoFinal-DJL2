@@ -23,14 +23,18 @@ class UpdateTareaViewModel(savedStateHandle: SavedStateHandle,
                            val tareasMultimediaRepository: TareaMultimediaRepository
 ) : ViewModel() {
 
-    /**
-     * Holds current item ui state
-     */
+    var mensaje = mutableStateOf("")
+
+    fun updateMensaje(nuevoMensaje: String) {
+        mensaje.value = nuevoMensaje
+    }
     var tareaUiState by mutableStateOf(TareaUiState())
         private set
 
     var imageUris by mutableStateOf(listOf<Uri>())
     var videoUris by mutableStateOf(listOf<Uri>())
+
+    var mensajeNoti by mutableStateOf(String)
 
     private val _tareaMultimediaUiState = mutableStateOf(NotaMultimediaUiState())
     val tareaMultimediaUiState: NotaMultimediaUiState

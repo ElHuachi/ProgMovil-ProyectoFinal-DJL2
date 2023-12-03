@@ -8,9 +8,13 @@ import android.app.TimePickerDialog
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.graphics.Typeface
 import android.net.Uri
 import android.os.Build
 import android.os.SystemClock
+import android.text.Spannable
+import android.text.SpannableString
+import android.text.style.StyleSpan
 import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -190,17 +194,11 @@ fun EditorTareas(
             Text(text = stringResource(R.string.recordatorio),fontWeight = FontWeight.Bold)
             Spacer(modifier = Modifier.width(8.dp))
             Button(onClick = {
-                /*alarmItem =
-                   AlarmItem(
-                       alarmTime = LocalDateTime.now().plusSeconds(
-                           secondText.toLong()
-                       ),
-                       message = messageText
-                   )*/
+                viewModel.updateMensaje(viewModel.tareaUiState.tareaDetails.name)
                 alarmItem = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                     AlarmItem(
                         LocalDateTime.now().plusSeconds(1000),
-                        "",
+                        viewModel.mensaje.value,
                         selectedDate,
                         selectedTime
                     )
@@ -208,8 +206,8 @@ fun EditorTareas(
                     TODO("VERSION.SDK_INT < O")
                 }
                 alarmItem?.let(alarmScheduler::schedule)
-                secondText = ""
-                messageText = ""
+                secondText = "AAAA"
+                messageText = "BBB"
 
             }, enabled = isTimeSelected) {
                 Text(text = stringResource(R.string.reminder))
@@ -342,7 +340,14 @@ fun EditorTareas(
                                 },
                                 modifier = Modifier.align(Alignment.End)
                             ) {
-                                Text(stringResource(R.string.delete))
+                                //Text(stringResource(R.string.delete))
+                                Image(
+                                    modifier = Modifier
+                                        .size(25.dp)
+                                        .padding(2.dp),
+                                    painter = painterResource(R.drawable.eliminar),
+                                    contentDescription = null
+                                )
                             }
                         }
                     }
@@ -392,7 +397,7 @@ fun TareaInputForm(
     ) {
         OutlinedTextField(
             value = tareaDetails.name,
-            onValueChange = { onValueChange(tareaDetails.copy(name = it)) },
+            onValueChange = { onValueChange(tareaDetails.copy(name = it))},
             label = { Text(stringResource(R.string.titulo)) },
             colors = OutlinedTextFieldDefaults.colors(
                 focusedContainerColor = MaterialTheme.colorScheme.secondaryContainer,
@@ -518,16 +523,23 @@ class AlarmReceiverPerro : BroadcastReceiver() {
         context?.let { ctx ->
             val notificationManager =
                 ctx.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            val mensaje = "Revisa tu app, tienes pendiente: $message"
+
+            val mensajeSpannable = SpannableString(mensaje)
+            val start = mensaje.indexOf(message)
+            val end = start + message.length
+            mensajeSpannable.setSpan(StyleSpan(Typeface.BOLD), start, end, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+
             val builder = NotificationCompat.Builder(ctx, channelId)
-                .setSmallIcon(R.drawable.ic_launcher_foreground)
+                .setSmallIcon(R.mipmap.ic_launcher_foreground)
                 .setContentTitle("Aplicación de Notas")
-                .setContentText("Revisa tu app, tienes una tarea pendiente $message")
+                .setContentText(mensajeSpannable)
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
             notificationManager.notify(1, builder.build())
         }
-
     }
 }
+
 
 data class AlarmItem(
     val alarmTime : LocalDateTime,
