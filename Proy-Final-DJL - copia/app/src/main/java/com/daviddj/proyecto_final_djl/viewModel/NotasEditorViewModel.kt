@@ -38,6 +38,10 @@ class NotasEditorViewModel(private val notasRepository: NotasRepository,
 
     var outputFile: File? = null
 
+    fun updateOutputFile(nuevoArchivo: File) {
+        outputFile = nuevoArchivo
+    }
+
     var imageUris by mutableStateOf(listOf<Uri>())
     var videoUris by mutableStateOf(listOf<Uri>())
     var audioUris by mutableStateOf(listOf<Uri>())

@@ -6,6 +6,7 @@ import android.media.MediaPlayer
 import android.media.MediaRecorder
 import android.net.Uri
 import android.os.Build
+import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
@@ -421,7 +422,8 @@ data class RationaleState(
 interface AudioRecorder {
     fun start(outputFile: File)
     fun stop()
-} class AndroidAudioRecorder(
+}
+class AndroidAudioRecorder(
     private val context: Context
 ): AudioRecorder {
 
@@ -435,6 +437,7 @@ interface AudioRecorder {
     }
 
     override fun start(outputFile: File) {
+        Log.e("Audio",outputFile.toUri().toString())
         createRecorder().apply {
             //viewModel.outputFile = outputFile
             setAudioSource(MediaRecorder.AudioSource.MIC)
@@ -461,7 +464,6 @@ class AndroidAudioPlayer(
 ): AudioRecorder {
 
     private var player: MediaPlayer? = null
-
 
     override fun start(outputFile: File) {
         MediaPlayer.create(context, outputFile.toUri()).apply {

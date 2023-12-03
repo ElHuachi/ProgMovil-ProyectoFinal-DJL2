@@ -5,6 +5,7 @@ import android.content.res.Configuration
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.annotation.DrawableRes
@@ -77,6 +78,7 @@ import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.SimpleExoPlayer
 import com.google.android.exoplayer2.ui.PlayerView
 import java.io.File
+import kotlin.math.log
 
 class MainActivity : ComponentActivity() {
     private val recorder by lazy {
@@ -88,6 +90,7 @@ class MainActivity : ComponentActivity() {
     }
 
     private var audioFile: File? = null
+    private var i = 0 // Variable de instancia para el contador de audios
 
     @OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
     @RequiresApi(Build.VERSION_CODES.O)
@@ -183,7 +186,10 @@ class MainActivity : ComponentActivity() {
                             navigateBack = { navController.popBackStack() },
                             navController = navController,
                             onClickStGra = {
-                                File(context.cacheDir, "audio.mp3").also {
+                                i++
+                                var idAudio = i.toString()
+                                var fileName = "audio$idAudio.mp3"
+                                File(context.cacheDir, fileName).also {
                                     recorder.start(it)
                                     audioFile = it
                                 }
