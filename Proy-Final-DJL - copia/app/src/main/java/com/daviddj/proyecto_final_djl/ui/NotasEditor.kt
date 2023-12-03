@@ -73,6 +73,8 @@ import java.io.FileOutputStream
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
+var audioUri: Uri? = null
+
 @OptIn(ExperimentalPermissionsApi::class)
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
@@ -90,6 +92,8 @@ fun EditorNotas(
     var imageUris by remember { mutableStateOf(listOf<Uri>()) }
     var videoUris by remember { mutableStateOf(listOf<Uri>()) }
     var audioUris by remember { mutableStateOf(listOf<Uri>()) }
+    var audioFile: File? = null
+
 
     val context = LocalContext.current
     val audioRecorder = AndroidAudioRecorder(context)
@@ -233,11 +237,16 @@ fun EditorNotas(
                 PermissionRequestButton(
                     isGranted = recordAudioPermissionState.status.isGranted,
                     title = stringResource(R.string.record_audio),
+//                    onClickStGra = {
+//                        val uri = audioRecorder.start(audioFile!!)
+//                    },
                     onClickStGra,
                     onClickSpGra,
                     onClickStRe,
-                    onClickSpRe
-                ) {
+                    onClickSpRe,
+                    viewModel.audioUris,
+                    viewModel
+                ){
                     if (recordAudioPermissionState.status.shouldShowRationale) {
                         rationaleState = RationaleState(
                             "Permiso para grabar audio",
@@ -323,6 +332,7 @@ fun EditorNotas(
     }
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun PermissionRequestButton(
     isGranted: Boolean, title: String,
@@ -330,13 +340,21 @@ fun PermissionRequestButton(
     onClickSpGra: () -> Unit,
     onClickStRe: () -> Unit,
     onClickSpRe: () -> Unit,
-    onClick: () -> Unit) {
+    audioUris: List<Uri>,
+    notasEditorViewModel: NotasEditorViewModel,
+    function: () -> Unit
+) {
     if (isGranted) {
         Row(modifier = Modifier
             .fillMaxWidth()
             .wrapContentSize(Alignment.Center)
         ){
-            Button(onClick = onClickStGra) {
+            Button(onClick = {
+                onClickStGra()
+                audioUris.plus(audioUri!!)
+                notasEditorViewModel.audioUris = notasEditorViewModel.audioUris.plus(audioUri!!)
+                Log.e("URI",audioUri.toString())
+            }) {
                 //Text("Grabar")
                 Image(
                     modifier = Modifier
@@ -382,11 +400,11 @@ fun PermissionRequestButton(
                 )
             }
         }
-    } else {
-        Button(onClick = onClick) {
-            Text("Request $title")
-        }
-    }
+    }// else {
+//        Button(onClick = onClick) {
+//            Text("Request $title")
+//        }
+//    }
 }
 
 /**
@@ -420,15 +438,15 @@ data class RationaleState(
 )
 
 interface AudioRecorder {
-    fun start(outputFile: File)
+    fun start(outputFile: File): Uri?
     fun stop()
 }
 class AndroidAudioRecorder(
-    private val context: Context
+    private val context: Context,
+    //private val viewModel: NotasEditorViewModel
 ): AudioRecorder {
 
     private var recorder: MediaRecorder? = null
-
 
     private fun createRecorder(): MediaRecorder {
         return if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
@@ -436,10 +454,11 @@ class AndroidAudioRecorder(
         } else MediaRecorder()
     }
 
-    override fun start(outputFile: File) {
-        Log.e("Audio",outputFile.toUri().toString())
+    @RequiresApi(Build.VERSION_CODES.O)
+    override fun start(outputFile: File): Uri? {
+        //this.outputFile = outputFile
         createRecorder().apply {
-            //viewModel.outputFile = outputFile
+            Log.e("Uri",outputFile.toUri().toString())
             setAudioSource(MediaRecorder.AudioSource.MIC)
             setOutputFormat(MediaRecorder.OutputFormat.MPEG_4)
             setAudioEncoder(MediaRecorder.AudioEncoder.AAC)
@@ -450,6 +469,8 @@ class AndroidAudioRecorder(
 
             recorder = this
         }
+        audioUri=outputFile.toUri()
+        return outputFile.toUri()
     }
 
     override fun stop() {
@@ -465,11 +486,12 @@ class AndroidAudioPlayer(
 
     private var player: MediaPlayer? = null
 
-    override fun start(outputFile: File) {
+    override fun start(outputFile: File):Uri {
         MediaPlayer.create(context, outputFile.toUri()).apply {
             player = this
             start()
         }
+        return outputFile.toUri()
     }
 
     override fun stop() {

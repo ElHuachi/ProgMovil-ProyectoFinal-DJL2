@@ -14,6 +14,7 @@ data class Nota(
     @ColumnInfo(name = "fecha") val fecha: String,
     @ColumnInfo(name = "contenido") var contenido: String,
     @ColumnInfo(name = "imageUris") var imageUris: String,
-    @ColumnInfo(name = "videoUris") var videoUris: String
+    @ColumnInfo(name = "videoUris") var videoUris: String,
+    @ColumnInfo(name = "audioUris") var audioUris: String
 )
 

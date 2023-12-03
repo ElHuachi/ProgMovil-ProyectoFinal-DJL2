@@ -26,16 +26,6 @@ class NotasEditorViewModel(private val notasRepository: NotasRepository,
     var notaUiState by mutableStateOf(NotaUiState())
         private set
 
-    //var notaMultimediaUiState by mutableStateOf(NotaMultimediaUiState())
-
-    private val _notaMultimediaUiState = mutableStateOf(NotaMultimediaUiState())
-    val notaMultimediaUiState: NotaMultimediaUiState
-        get() = _notaMultimediaUiState.value
-
-    fun setNotaMultimediaUiState(newUiState: NotaMultimediaUiState) {
-        _notaMultimediaUiState.value = newUiState
-    }
-
     var outputFile: File? = null
 
     fun updateOutputFile(nuevoArchivo: File) {
@@ -51,7 +41,7 @@ class NotasEditorViewModel(private val notasRepository: NotasRepository,
     fun updateUiState(notaDetails: NotaDetails) {
         val currentDateTime = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))
         val updatedNotaDetails = notaDetails.copy(fecha = currentDateTime, imageUris = imageUris.joinToString(","),
-            videoUris = videoUris.joinToString(","))
+            videoUris = videoUris.joinToString(","),audioUris=audioUris.joinToString(","))
         notaUiState = NotaUiState(notaDetails = updatedNotaDetails, isEntryValid = validateInput(updatedNotaDetails))
     }
 
@@ -132,7 +122,8 @@ data class NotaDetails(
     var fecha: String = "",
     val contenido: String = "",
     val imageUris: String = "",
-    val videoUris: String = ""
+    val videoUris: String = "",
+    val audioUris: String = ""
 )
 
 fun NotaDetails.toItem(): Nota = Nota(
@@ -142,7 +133,8 @@ fun NotaDetails.toItem(): Nota = Nota(
     fecha = fecha,
     contenido = contenido,
     imageUris = imageUris,
-    videoUris = videoUris
+    videoUris = videoUris,
+    audioUris = audioUris
 )
 
 fun Nota.toItemUiState(isEntryValid: Boolean = false): NotaUiState = NotaUiState(
@@ -157,7 +149,8 @@ fun Nota.toItemDetails(): NotaDetails = NotaDetails(
     fecha = fecha,
     contenido = contenido,
     imageUris = imageUris,
-    videoUris = videoUris
+    videoUris = videoUris,
+    audioUris = audioUris
 )
 
 //MULTIMEDIA

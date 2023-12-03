@@ -7,7 +7,7 @@ import androidx.room.RoomDatabase
 import com.daviddj.proyecto_final_djl.model.Nota
 import com.daviddj.proyecto_final_djl.model.NotaMultimedia
 
-@Database(entities = [Nota::class, NotaMultimedia::class], version = 6, exportSchema = false)
+@Database(entities = [Nota::class, NotaMultimedia::class], version = 7, exportSchema = false)
 abstract class NotasDatabase : RoomDatabase() {
     abstract fun notaDao(): NotaDAO
     abstract fun notaMultimediaDao(): NotaMultimediaDAO
