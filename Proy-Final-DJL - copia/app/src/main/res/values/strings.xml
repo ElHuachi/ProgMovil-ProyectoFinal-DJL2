@@ -33,5 +33,7 @@
     <string name="reminder">Agendar</string>
     <string name="cancelar">Cancelar</string>
     <string name="recordatorio">Recordatorio:</string>
+    <string name="nuevosElementos">Nuevos Elementos:</string>
+    <string name="audios">Audios:</string>
 
 </resources>

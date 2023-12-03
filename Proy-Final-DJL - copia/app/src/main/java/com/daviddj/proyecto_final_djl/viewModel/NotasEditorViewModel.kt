@@ -48,6 +48,7 @@ class NotasEditorViewModel(private val notasRepository: NotasRepository,
     fun removeUri(uri: Uri) {
         imageUris = imageUris.filter { it != uri }
         videoUris = videoUris.filter { it != uri }
+        audioUris = audioUris.filter { it != uri }
     }
 
     private fun validateInput(uiState: NotaDetails = notaUiState.notaDetails): Boolean {

@@ -34,5 +34,7 @@
     <string name="reminder">Schedule</string>
     <string name="cancelar">Cancel</string>
     <string name="recordatorio">Reminder:</string>
+    <string name="nuevosElementos">New Elements:</string>
+    <string name="audios">Audios:</string>
 
 </resources>

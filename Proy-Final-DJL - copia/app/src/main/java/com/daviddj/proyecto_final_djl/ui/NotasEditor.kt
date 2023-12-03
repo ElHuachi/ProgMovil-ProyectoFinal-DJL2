@@ -86,7 +86,7 @@ fun EditorNotas(
     onClickStGra: () -> Unit,
     onClickSpGra: () -> Unit,
     onClickStRe: () -> Unit,
-    onClickSpRe: () -> Unit
+    onClickSpRe: () -> Unit,
 ){
     val coroutineScope = rememberCoroutineScope()
     var imageUris by remember { mutableStateOf(listOf<Uri>()) }
@@ -237,13 +237,8 @@ fun EditorNotas(
                 PermissionRequestButton(
                     isGranted = recordAudioPermissionState.status.isGranted,
                     title = stringResource(R.string.record_audio),
-//                    onClickStGra = {
-//                        val uri = audioRecorder.start(audioFile!!)
-//                    },
                     onClickStGra,
                     onClickSpGra,
-                    onClickStRe,
-                    onClickSpRe,
                     viewModel.audioUris,
                     viewModel
                 ){
@@ -266,7 +261,7 @@ fun EditorNotas(
         Spacer(modifier = Modifier.height(16.dp))//MOSTRAR MULTIMEDIA
         Box {
             LazyColumn(modifier = Modifier.align(Alignment.Center)) {
-                items(imageUris + videoUris) { uri ->
+                items(imageUris + videoUris + viewModel.audioUris) { uri ->
                     Card(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -289,6 +284,34 @@ fun EditorNotas(
                                         .height(400.dp)
                                         .fillMaxWidth()
                                 )
+                            } else if (uri in viewModel.audioUris) {
+                                PermissionRequestButton2(
+                                    isGranted = recordAudioPermissionState.status.isGranted,
+                                    title = stringResource(R.string.record_audio),
+                                    onClickSpGra,
+                                    onClickStRe,
+                                    onClickStRe = {
+                                        val audioPlayer2 = AndroidAudioPlayer2(context,uri)
+                                        audioPlayer2.start(uri)
+                                    },
+                                    onClickSpRe,
+                                    viewModel.audioUris,
+                                    viewModel
+                                ){
+                                    if (recordAudioPermissionState.status.shouldShowRationale) {
+                                        rationaleState = RationaleState(
+                                            "Permiso para grabar audio",
+                                            "In order to use this feature please grant access by accepting " + "the grabar audio dialog." + "\n\nWould you like to continue?",
+                                        ) { proceed ->
+                                            if (proceed) {
+                                                recordAudioPermissionState.launchPermissionRequest()
+                                            }
+                                            rationaleState = null
+                                        }
+                                    } else {
+                                        recordAudioPermissionState.launchPermissionRequest()
+                                    }
+                                }
                             }
                             // Obtén la descripción actual del ViewModel
 //                            TextField(
@@ -338,11 +361,9 @@ fun PermissionRequestButton(
     isGranted: Boolean, title: String,
     onClickStGra: () -> Unit,
     onClickSpGra: () -> Unit,
-    onClickStRe: () -> Unit,
-    onClickSpRe: () -> Unit,
     audioUris: List<Uri>,
     notasEditorViewModel: NotasEditorViewModel,
-    function: () -> Unit
+    function: () -> Unit,
 ) {
     if (isGranted) {
         Row(modifier = Modifier
@@ -351,9 +372,6 @@ fun PermissionRequestButton(
         ){
             Button(onClick = {
                 onClickStGra()
-                audioUris.plus(audioUri!!)
-                notasEditorViewModel.audioUris = notasEditorViewModel.audioUris.plus(audioUri!!)
-                Log.e("URI",audioUri.toString())
             }) {
                 //Text("Grabar")
                 Image(
@@ -365,7 +383,12 @@ fun PermissionRequestButton(
                 )
             }
             Spacer(modifier = Modifier.width(20.dp))
-            Button(onClick = onClickSpGra) {
+            Button(onClick = {
+                onClickSpGra()
+                audioUris.plus(audioUri!!)
+                notasEditorViewModel.audioUris = notasEditorViewModel.audioUris.plus(audioUri!!)
+                Log.e("URI",audioUri.toString())
+            }) {
                 Image(
                     modifier = Modifier
                         .size(25.dp)
@@ -375,7 +398,26 @@ fun PermissionRequestButton(
                 )
             }
         }
-        Spacer(modifier = Modifier.height(4.dp))
+    }// else {
+//        Button(onClick = onClick) {
+//            Text("Request $title")
+//        }
+//    }
+}
+
+@Composable
+fun PermissionRequestButton2(
+    isGranted: Boolean, title: String,
+    onClickStGra: () -> Unit,
+    onClickSpGra: () -> Unit,
+    onClickStRe: () -> Unit,
+    onClickSpRe: () -> Unit,
+    audioUris: List<Uri>,
+    notasEditorViewModel: NotasEditorViewModel,
+    function: () -> Unit
+) {
+    if (isGranted) {
+        //Spacer(modifier = Modifier.height(4.dp))
         Row(modifier = Modifier
             .fillMaxWidth()
             .wrapContentSize(Alignment.Center)
@@ -406,6 +448,8 @@ fun PermissionRequestButton(
 //        }
 //    }
 }
+
+
 
 /**
  * Simple AlertDialog that displays the given rational state
@@ -441,6 +485,12 @@ interface AudioRecorder {
     fun start(outputFile: File): Uri?
     fun stop()
 }
+
+interface AudioRecorder2 {
+    fun start(audioUri: Uri): Uri?
+    fun stop()
+}
+
 class AndroidAudioRecorder(
     private val context: Context,
     //private val viewModel: NotasEditorViewModel
@@ -492,6 +542,28 @@ class AndroidAudioPlayer(
             start()
         }
         return outputFile.toUri()
+    }
+
+    override fun stop() {
+        player?.stop()
+        player?.release()
+        player = null
+    }
+}
+
+class AndroidAudioPlayer2(
+    private val context: Context,
+    private val audio: Uri
+): AudioRecorder2 {
+
+    private var player: MediaPlayer? = null
+
+    override fun start(audioUri: Uri):Uri {
+        MediaPlayer.create(context, audio).apply {
+            player = this
+            start()
+        }
+        return audio
     }
 
     override fun stop() {

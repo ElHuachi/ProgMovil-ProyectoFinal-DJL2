@@ -209,6 +209,7 @@ fun UpdateNotaScreen(
 
             val imagenesCargadas = viewModel.notaUiState.notaDetails.imageUris.split(",")
             val videosCargados = viewModel.notaUiState.notaDetails.videoUris.split(",")
+            val audiosCargados = viewModel.notaUiState.notaDetails.audioUris.split(",")
 
             val nuevos = imageUris + videoUris
 
@@ -220,7 +221,7 @@ fun UpdateNotaScreen(
 //                }
 //            }
 
-            val combinedList = listOf(imagenesCargadas, videosCargados, nuevos)
+            val combinedList = listOf(imagenesCargadas, videosCargados, audiosCargados,nuevos)
             val idnota = viewModel.notaUiState.notaDetails.id
             LazyColumn {
                 itemsIndexed(combinedList) { index, list ->
@@ -308,8 +309,23 @@ fun UpdateNotaScreen(
                                 }
                             }
                         }
-                        2 -> { // Renderiza los nuevos elementos aquí
-                            Text(text = "Nuevos elementos", fontSize = 20.sp, fontWeight = FontWeight.Bold)
+                        2 -> { //AUDIOS
+                            Text(text = stringResource(R.string.audios), fontSize = 20.sp, fontWeight = FontWeight.Bold)
+                            Spacer(modifier = Modifier.height(16.dp))
+                            list.forEach { uri ->
+                                Card(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(8.dp)
+                                ) {
+                                    Row{
+
+                                    }
+                                }
+                            }
+                        }
+                        3 -> { // Renderiza los nuevos elementos aquí
+                            Text(text = stringResource(R.string.nuevosElementos), fontSize = 20.sp, fontWeight = FontWeight.Bold)
                             Spacer(modifier = Modifier.height(16.dp))
                             list.forEach { uri ->
                                 Card(
