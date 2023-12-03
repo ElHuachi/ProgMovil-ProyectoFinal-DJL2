@@ -13,6 +13,7 @@ import com.daviddj.proyecto_final_djl.data.TareasRepository
 import com.daviddj.proyecto_final_djl.model.NotaMultimedia
 import com.daviddj.proyecto_final_djl.model.Tarea
 import com.daviddj.proyecto_final_djl.model.TareaMultimedia
+import java.io.File
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
@@ -26,37 +27,38 @@ class TareasEditorViewModel(private val tareasRepository: TareasRepository,
     var multimediaDescriptions by mutableStateOf(mutableListOf<MultimediaDescription>())
 
 
+    var outputFile: File? = null
+
+    fun updateOutputFile(nuevoArchivo: File) {
+        outputFile = nuevoArchivo
+    }
+
     var mensaje = mutableStateOf("")
 
     fun updateMensaje(nuevoMensaje: String) {
         mensaje.value = nuevoMensaje
     }
 
-    //var notaMultimediaUiState by mutableStateOf(NotaMultimediaUiState())
-
     private val _tareaMultimediaUiState = mutableStateOf(TareaMultimediaUiState())
-    val notaMultimediaUiState: TareaMultimediaUiState
-        get() = _tareaMultimediaUiState.value
-
-    fun setTareaMultimediaUiState(newUiState: TareaMultimediaUiState) {
-        _tareaMultimediaUiState.value = newUiState
-    }
-
     var tareaUiState by mutableStateOf(TareaUiState())
         private set
 
     var imageUris by mutableStateOf(listOf<Uri>())
     var videoUris by mutableStateOf(listOf<Uri>())
+    var audioUris by mutableStateOf(listOf<Uri>())
 
     fun removeUri(uri: Uri) {
         imageUris = imageUris.filter { it != uri }
         videoUris = videoUris.filter { it != uri }
+        audioUris = audioUris.filter { it != uri }
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
     fun updateUiState(tareaDetails: TareaDetails, selectedDate: String) {
         val currentDateTime = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))
-        val updatedTareaDetails = tareaDetails.copy(fecha = currentDateTime, fechaACompletar = selectedDate, imageUris = imageUris.joinToString(","), videoUris = videoUris.joinToString(","))
+        val updatedTareaDetails = tareaDetails.copy(fecha = currentDateTime, fechaACompletar = selectedDate,
+            imageUris = imageUris.joinToString(","), videoUris = videoUris.joinToString(","),
+            audioUris=audioUris.joinToString(","))
         tareaUiState = TareaUiState(tareaDetails = updatedTareaDetails, isEntryValid = validateInput(updatedTareaDetails))
     }
 
@@ -98,6 +100,20 @@ class TareasEditorViewModel(private val tareasRepository: TareasRepository,
                 )
                 tareasMultimediaRepository.insertItem(tareaMultimedia)
             }
+
+            for (uri in audioUris) {
+                val multimediaDescription = multimediaDescriptions
+                    .firstOrNull { it.uri == uri }
+                    ?: TareasEditorViewModel.MultimediaDescription(uri, "Sin descripción")
+
+                val tareaMultimedia = TareaMultimedia(
+                    uri = uri.toString(),
+                    descripcion = multimediaDescription.descripcion,
+                    tareaId = tareaId.toInt(),
+                    tipo = "audio"
+                )
+                tareasMultimediaRepository.insertItem(tareaMultimedia)
+            }
         }
     }
 }
@@ -116,7 +132,8 @@ data class TareaDetails(
     val contenido: String = "",
     val isComplite: Boolean = false,
     val imageUris: String = "",
-    val videoUris: String = ""
+    val videoUris: String = "",
+    val audioUris: String = ""
 )
 
 fun TareaDetails.toItem(): Tarea = Tarea(
@@ -128,7 +145,8 @@ fun TareaDetails.toItem(): Tarea = Tarea(
     contenido = contenido,
     isComplete = isComplite,
     imageUris = imageUris,
-    videoUris = videoUris
+    videoUris = videoUris,
+    audioUris = audioUris
 )
 
 fun Tarea.toItemUiState(isEntryValid: Boolean = false): TareaUiState = TareaUiState(
@@ -145,7 +163,8 @@ fun Tarea.toItemDetails(): TareaDetails = TareaDetails(
     contenido = contenido,
     isComplite = isComplete,
     imageUris = imageUris,
-    videoUris = videoUris
+    videoUris = videoUris,
+    audioUris = audioUris
 )
 
 //MULTIMEDIA

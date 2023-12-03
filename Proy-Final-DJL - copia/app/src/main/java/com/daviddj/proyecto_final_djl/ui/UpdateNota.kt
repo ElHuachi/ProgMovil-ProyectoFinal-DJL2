@@ -246,14 +246,6 @@ fun UpdateNotaScreen(
 
             val nuevos = imageUris + videoUris
 
-//            val mutableStateFlow: MutableStateFlow<List<NotaMultimedia>> = MutableStateFlow(emptyList())
-//            LazyColumn {
-//                items(mutableStateFlow) { notaMultimedia ->
-//                    Text(text = notaMultimedia.toString())
-//                    // Aquí puedes añadir más composables para mostrar la información de NotaMultimedia como prefieras.
-//                }
-//            }
-
             val combinedList = listOf(imagenesCargadas, videosCargados, audiosCargados,nuevos)
             val idnota = viewModel.notaUiState.notaDetails.id
             LazyColumn {

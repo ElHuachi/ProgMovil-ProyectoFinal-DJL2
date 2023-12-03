@@ -33,16 +33,11 @@ class UpdateTareaViewModel(savedStateHandle: SavedStateHandle,
 
     var imageUris by mutableStateOf(listOf<Uri>())
     var videoUris by mutableStateOf(listOf<Uri>())
-
-    var mensajeNoti by mutableStateOf(String)
+    var audioUris by mutableStateOf(listOf<Uri>())
 
     private val _tareaMultimediaUiState = mutableStateOf(NotaMultimediaUiState())
     val tareaMultimediaUiState: NotaMultimediaUiState
         get() = _tareaMultimediaUiState.value
-
-//    fun setTareaMultimediaUiState(newUiState: TareaMultimediaUiState) {
-//        _tareaMultimediaUiState.value = newUiState
-//    }
 
     private val tareaId: Int = checkNotNull(savedStateHandle[TareaEditDestination.itemIdArg])
 

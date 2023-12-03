@@ -8,7 +8,7 @@ import com.daviddj.proyecto_final_djl.model.NotaMultimedia
 import com.daviddj.proyecto_final_djl.model.Tarea
 import com.daviddj.proyecto_final_djl.model.TareaMultimedia
 
-@Database(entities = [Tarea::class, TareaMultimedia::class], version = 9, exportSchema = false)
+@Database(entities = [Tarea::class, TareaMultimedia::class], version = 10, exportSchema = false)
 abstract class TareasDatabase : RoomDatabase() {
     abstract fun tareaDao(): TareaDAO
 

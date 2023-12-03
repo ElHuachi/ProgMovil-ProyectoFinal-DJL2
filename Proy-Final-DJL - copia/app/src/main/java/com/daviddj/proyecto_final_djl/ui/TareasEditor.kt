@@ -1,5 +1,6 @@
 package com.daviddj.proyecto_final_djl.ui
 
+import android.Manifest
 import android.app.AlarmManager
 import android.app.DatePickerDialog
 import android.app.NotificationManager
@@ -32,6 +33,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
@@ -73,9 +75,14 @@ import com.daviddj.proyecto_final_djl.ComposeFileProvider
 import com.daviddj.proyecto_final_djl.R
 import com.daviddj.proyecto_final_djl.VideoPlayer
 import com.daviddj.proyecto_final_djl.viewModel.NotaDetails
+import com.daviddj.proyecto_final_djl.viewModel.NotasEditorViewModel
 import com.daviddj.proyecto_final_djl.viewModel.TareaDetails
 import com.daviddj.proyecto_final_djl.viewModel.TareaUiState
 import com.daviddj.proyecto_final_djl.viewModel.TareasEditorViewModel
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.isGranted
+import com.google.accompanist.permissions.rememberPermissionState
+import com.google.accompanist.permissions.shouldShowRationale
 import kotlinx.coroutines.launch
 import java.time.LocalDateTime
 import java.time.ZoneId
@@ -85,6 +92,7 @@ import java.util.Calendar
 import java.util.Locale
 import kotlin.reflect.KFunction2
 
+@OptIn(ExperimentalPermissionsApi::class)
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun EditorTareas(
@@ -92,7 +100,11 @@ fun EditorTareas(
     modifier: Modifier = Modifier,
     viewModel : TareasEditorViewModel = viewModel(factory = AppViewModelProvider.Factory),
     navController: NavHostController,
-    alarmScheduler: AlarmScheduler
+    alarmScheduler: AlarmScheduler,
+    onClickStGra: () -> Unit,
+    onClickSpGra: () -> Unit,
+    onClickStRe: () -> Unit,
+    onClickSpRe: () -> Unit,
 ) {
     val coroutineScope = rememberCoroutineScope()
     var selectedDate by rememberSaveable { mutableStateOf("") }
@@ -153,6 +165,17 @@ fun EditorTareas(
     }
     var alarmItem : AlarmItem? = null
     //ALARMA
+
+    //AUDIO
+    val recordAudioPermissionState = rememberPermissionState(
+        Manifest.permission.RECORD_AUDIO
+    )
+
+    //Realiza un seguimiento del estado del diálogo de justificación, necesario cuando el usuario requiere más justificación
+    var rationaleState by remember {
+        mutableStateOf<RationaleState?>(null)
+    }
+    //AUDIO
 
     Column(
         modifier = Modifier
@@ -281,20 +304,46 @@ fun EditorTareas(
                     contentDescription = null
                 )
             }
-            Button(onClick = { /*TODO*/ }) {
-                Image(
-                    modifier = Modifier
-                        .size(35.dp)
-                        .padding(4.dp),
-                    painter = painterResource(R.drawable.microfono),
-                    contentDescription = null
-                )
+        }
+        Spacer(modifier = Modifier.height(16.dp))//AUDIOS
+        Row{
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                //.animateContentSize(),
+                //verticalArrangement = Arrangement.spacedBy(16.dp),
+            ) {
+                // Show rationale dialog when needed
+                rationaleState?.run { PermissionRationaleDialog(rationaleState = this) }
+
+                PermissionRequestButtonTareas(
+                    isGranted = recordAudioPermissionState.status.isGranted,
+                    title = stringResource(R.string.record_audio),
+                    onClickStGra,
+                    onClickSpGra,
+                    viewModel.audioUris,
+                    viewModel
+                ){
+                    if (recordAudioPermissionState.status.shouldShowRationale) {
+                        rationaleState = RationaleState(
+                            "Permiso para grabar audio",
+                            "In order to use this feature please grant access by accepting " + "the grabar audio dialog." + "\n\nWould you like to continue?",
+                        ) { proceed ->
+                            if (proceed) {
+                                recordAudioPermissionState.launchPermissionRequest()
+                            }
+                            rationaleState = null
+                        }
+                    } else {
+                        recordAudioPermissionState.launchPermissionRequest()
+                    }
+                }
             }
         }
         Spacer(modifier = Modifier.height(16.dp))//MOSTRAR MULTIMEDIA
         Box(modifier = modifier) {
             LazyColumn(modifier = Modifier.align(Alignment.Center)) {
-                items(imageUris + videoUris) { uri ->
+                items(imageUris + videoUris + viewModel.audioUris) { uri ->
                     Card(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -316,6 +365,35 @@ fun EditorTareas(
                                         .height(400.dp)
                                         .fillMaxWidth()
                                 )
+                            } else if (uri in viewModel.audioUris) {
+                                val audioPlayer2 = AndroidAudioPlayer2(context,uri)
+                                PermissionRequestButton2(
+                                    isGranted = recordAudioPermissionState.status.isGranted,
+                                    title = stringResource(R.string.record_audio),
+                                    onClickSpGra,
+                                    onClickStRe,
+                                    onClickStRe = {
+                                        audioPlayer2.start(uri)
+                                    },
+                                    onClickSpRe = {
+                                        audioPlayer2.stop()
+                                    },
+                                    viewModel.audioUris,
+                                ){
+                                    if (recordAudioPermissionState.status.shouldShowRationale) {
+                                        rationaleState = RationaleState(
+                                            "Permiso para grabar audio",
+                                            "In order to use this feature please grant access by accepting " + "the grabar audio dialog." + "\n\nWould you like to continue?",
+                                        ) { proceed ->
+                                            if (proceed) {
+                                                recordAudioPermissionState.launchPermissionRequest()
+                                            }
+                                            rationaleState = null
+                                        }
+                                    } else {
+                                        recordAudioPermissionState.launchPermissionRequest()
+                                    }
+                                }
                             }
                             // Obtén la descripción actual del ViewModel
 //                            TextField(
@@ -356,6 +434,56 @@ fun EditorTareas(
             }
         }
     }
+}
+
+@RequiresApi(Build.VERSION_CODES.O)
+@Composable
+fun PermissionRequestButtonTareas(
+    isGranted: Boolean, title: String,
+    onClickStGra: () -> Unit,
+    onClickSpGra: () -> Unit,
+    audioUris: List<Uri>,
+    tareasEditorViewModel: TareasEditorViewModel,
+    function: () -> Unit,
+) {
+    if (isGranted) {
+        Row(modifier = Modifier
+            .fillMaxWidth()
+            .wrapContentSize(Alignment.Center)
+        ){
+            Button(onClick = {
+                onClickStGra()
+            }) {
+                //Text("Grabar")
+                Image(
+                    modifier = Modifier
+                        .size(25.dp)
+                        .padding(2.dp),
+                    painter = painterResource(R.drawable.microfono_grabador),
+                    contentDescription = null
+                )
+            }
+            Spacer(modifier = Modifier.width(20.dp))
+            Button(onClick = {
+                onClickSpGra()
+                audioUris.plus(audioUri!!)
+                tareasEditorViewModel.audioUris = tareasEditorViewModel.audioUris.plus(audioUri!!)
+                Log.e("URI en boton stop",audioUri.toString())
+            }) {
+                Image(
+                    modifier = Modifier
+                        .size(25.dp)
+                        .padding(2.dp),
+                    painter = painterResource(R.drawable.cuadra),
+                    contentDescription = null
+                )
+            }
+        }
+    }// else {
+//        Button(onClick = onClick) {
+//            Text("Request $title")
+//        }
+//    }
 }
 
 

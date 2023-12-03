@@ -92,6 +92,7 @@ class MainActivity : ComponentActivity() {
 
     private var audioFile: File? = null
     private var i = 0 // Variable de instancia para el contador de audios
+    private var i2 = 0 // Variable de instancia para el contador de audios en tareas
 
     @OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
     @RequiresApi(Build.VERSION_CODES.O)
@@ -168,7 +169,19 @@ class MainActivity : ComponentActivity() {
                         UpdateTareaScreen(
                             navigateBack = { navController.popBackStack() },
                             onNavigateUp = { navController.navigateUp() },
-                            alarmScheduler = AlarmSchedulerImpl(context)
+                            alarmScheduler = AlarmSchedulerImpl(context),
+                            onClickStGra = {
+                                i2++
+                                var idAudio = i2.toString()
+                                var fileName = "audio$idAudio.mp3"
+                                File(context.cacheDir, fileName).also {
+                                    recorder.start(it)
+                                    audioFile = it
+                                }
+                            },
+                            onClickSpGra = { recorder.stop() },
+                            onClickStRe = { audioFile?.let { player.start(it) } },
+                            onClickSpRe = { player.stop() }
                         )
                     }
                     composable(
@@ -183,7 +196,7 @@ class MainActivity : ComponentActivity() {
                             onClickStGra = {
                                 i++
                                 var idAudio = i.toString()
-                                var fileName = "audio$idAudio.mp3"
+                                var fileName = "audioTareas$idAudio.mp3"
                                 File(context.cacheDir, fileName).also {
                                     recorder.start(it)
                                     audioFile = it
@@ -208,14 +221,27 @@ class MainActivity : ComponentActivity() {
                             },
                             onClickSpGra = { recorder.stop() },
                             onClickStRe = { audioFile?.let { player.start(it) } },
-                            onClickSpRe = { player.stop() })
+                            onClickSpRe = { player.stop() }
+                        )
                     }
                     composable(Routes.TareasEditor.route) {
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                             EditorTareas(
                                 navigateBack = { navController.popBackStack() },
                                 navController = navController,
-                                alarmScheduler = AlarmSchedulerImpl(context)
+                                alarmScheduler = AlarmSchedulerImpl(context),
+                                onClickStGra = {
+                                    i2++
+                                    var idAudio = i2.toString()
+                                    var fileName = "audioTareas$idAudio.mp3"
+                                    File(context.cacheDir, fileName).also {
+                                        recorder.start(it)
+                                        audioFile = it
+                                    }
+                                },
+                                onClickSpGra = { recorder.stop() },
+                                onClickStRe = { audioFile?.let { player.start(it) } },
+                                onClickSpRe = { player.stop() }
                             )
                         }
                     }

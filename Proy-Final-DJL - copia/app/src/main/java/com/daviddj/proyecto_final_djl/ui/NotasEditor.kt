@@ -521,6 +521,7 @@ class AndroidAudioRecorder(
             recorder = this
         }
         audioUri=outputFile.toUri()
+        Log.e("variable para guardar uri", audioUri.toString())
         return outputFile.toUri()
     }
 
