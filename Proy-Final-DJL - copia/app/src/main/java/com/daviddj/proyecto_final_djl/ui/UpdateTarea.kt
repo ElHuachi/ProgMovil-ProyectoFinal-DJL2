@@ -216,14 +216,9 @@ fun UpdateTareaScreen(
                 tareaUiState = viewModel.tareaUiState,
                 onTareaValueChange = { updatedTareaDetails ->
                     val combinedDateTime = "$selectedDate $selectedTime"
-                    //viewModel.updateMensaje(viewModel.tareaUiState.tareaDetails.name)
                     viewModel.updateUiState(updatedTareaDetails, combinedDateTime)
                 },
                 onSaveClick = {
-                    // Note: If the user rotates the screen very fast, the operation may get cancelled
-                    // and the item may not be updated in the Database. This is because when config
-                    // change occurs, the Activity will be recreated and the rememberCoroutineScope will
-                    // be cancelled - since the scope is bound to composition.
                     coroutineScope.launch {
                         val combinedDateTime = "$selectedDate $selectedTime"
                         viewModel.updateUiState(viewModel.tareaUiState.tareaDetails, combinedDateTime)
@@ -243,7 +238,10 @@ fun UpdateTareaScreen(
                         val uri = ComposeFileProvider.getImageUri(context)
                         imageUri = uri
                         cameraLauncher.launch(uri)
-                    }) {
+                    },
+                    modifier = Modifier
+                        .weight(1f)
+                        .padding(start = 8.dp)) {
                     Image(
                         modifier = Modifier
                             .size(35.dp)
@@ -257,7 +255,10 @@ fun UpdateTareaScreen(
                         val uri = ComposeFileProvider.getVideoUri(context)
                         videoUri = uri
                         videoLauncher.launch(uri)
-                    } ) {
+                    },
+                    modifier = Modifier
+                        .weight(1f)
+                        .padding(start = 8.dp)) {
                     Image(
                         modifier = Modifier
                             .size(35.dp)
@@ -266,7 +267,10 @@ fun UpdateTareaScreen(
                         contentDescription = null
                     )
                 }
-                Button(onClick = { imagePicker.launch("image/*") }) {
+                Button(onClick = { imagePicker.launch("image/*") },
+                    modifier = Modifier
+                        .weight(1f)
+                        .padding(start = 8.dp)) {
                     Image(
                         modifier = Modifier
                             .size(35.dp)
@@ -281,10 +285,7 @@ fun UpdateTareaScreen(
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                    //.animateContentSize(),
-                    //verticalArrangement = Arrangement.spacedBy(16.dp),
                 ) {
-                    // Show rationale dialog when needed
                     rationaleState?.run { PermissionRationaleDialog(rationaleState = this) }
                     var viewM: NotasEditorViewModel
                     PermissionRequestButtonTareas(
@@ -497,22 +498,6 @@ fun UpdateTareaScreen(
                                             )
                                         }
                                         Spacer(modifier = Modifier.height(16.dp))
-                                        // Agrega el TextField para la descripción aquí
-//                                        TextField(
-//                                            value = viewModel.notaMultimediaUiState.notaMultimediaDetails.descripcion,
-//                                            onValueChange = { newDescription ->
-//                                                viewModel.setNotaMultimediaUiState(
-//                                                    viewModel.notaMultimediaUiState.copy(
-//                                                        notaMultimediaDetails = viewModel.notaMultimediaUiState.notaMultimediaDetails.copy(descripcion = newDescription)
-//                                                    )
-//                                                )
-//                                            },
-//                                            label = { Text("Descripción") },
-//                                            modifier = Modifier.fillMaxWidth(),
-//                                            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done)
-//                                        )
-//                                        Spacer(modifier = Modifier.height(16.dp))
-                                        // Agrega el botón aquí
                                         Button(
                                             onClick = {
                                                 // Elimina la tarjeta y quita la imagen del arreglo.

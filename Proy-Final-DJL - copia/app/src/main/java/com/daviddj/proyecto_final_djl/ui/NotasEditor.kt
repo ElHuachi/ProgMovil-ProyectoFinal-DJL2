@@ -191,7 +191,10 @@ fun EditorNotas(
                     val uri = ComposeFileProvider.getImageUri(context)
                     imageUri = uri
                     cameraLauncher.launch(uri)
-                }) {
+                },
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(start = 8.dp)) {
                 Image(
                     modifier = Modifier
                         .size(35.dp)
@@ -205,7 +208,10 @@ fun EditorNotas(
                     val uri = ComposeFileProvider.getVideoUri(context)
                     videoUri = uri
                     videoLauncher.launch(uri)
-                } ) {
+                },
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(start = 8.dp)) {
                 Image(
                     modifier = Modifier
                         .size(35.dp)
@@ -214,7 +220,10 @@ fun EditorNotas(
                     contentDescription = null
                 )
             }
-            Button(onClick = { imagePicker.launch("image/*") }) {
+            Button(onClick = { imagePicker.launch("image/*") },
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(start = 8.dp)) {
                 Image(
                     modifier = Modifier
                         .size(35.dp)
@@ -315,20 +324,6 @@ fun EditorNotas(
                                     }
                                 }
                             }
-                            // Obtén la descripción actual del ViewModel
-//                            TextField(
-//                                value = viewModel.notaMultimediaUiState.notaMultimediaDetails.descripcion,
-//                                onValueChange = { newDescription ->
-//                                    viewModel.setNotaMultimediaUiState(
-//                                        viewModel.notaMultimediaUiState.copy(
-//                                            notaMultimediaDetails = viewModel.notaMultimediaUiState.notaMultimediaDetails.copy(descripcion = newDescription)
-//                                        )
-//                                    )
-//                                },
-//                                label = { Text("Descripción") },
-//                                modifier = Modifier.fillMaxWidth(),
-//                                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done)
-//                            )
                             Button(
                                 onClick = {
                                     // Elimina la tarjeta y quita la imagen del arreglo.
@@ -338,7 +333,6 @@ fun EditorNotas(
                                 },
                                 modifier = Modifier.align(Alignment.End)
                             ) {
-                                //Text(stringResource(R.string.delete))
                                 Image(
                                     modifier = Modifier
                                         .size(25.dp)
@@ -374,7 +368,10 @@ fun PermissionRequestButton(
         ){
             Button(onClick = {
                 onClickStGra()
-            }) {
+            },
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(start = 8.dp)) {
                 //Text("Grabar")
                 Image(
                     modifier = Modifier
@@ -390,7 +387,10 @@ fun PermissionRequestButton(
                 audioUris.plus(audioUri!!)
                 notasEditorViewModel.audioUris = notasEditorViewModel.audioUris.plus(audioUri!!)
                 Log.e("URI",audioUri.toString())
-            }) {
+            },
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(start = 8.dp)) {
                 Image(
                     modifier = Modifier
                         .size(25.dp)
@@ -423,7 +423,10 @@ fun PermissionRequestButton2(
             .fillMaxWidth()
             .wrapContentSize(Alignment.Center)
         ){
-            Button(onClick = onClickStRe) {
+            Button(onClick = onClickStRe,
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(start = 8.dp)) {
                 Image(
                     modifier = Modifier
                         .size(25.dp)
@@ -433,7 +436,10 @@ fun PermissionRequestButton2(
                 )
             }
             Spacer(modifier = Modifier.width(20.dp))
-            Button(onClick = onClickSpRe) {
+            Button(onClick = onClickSpRe ,
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(start = 8.dp)) {
                 Image(
                     modifier = Modifier
                         .size(25.dp)
@@ -449,8 +455,6 @@ fun PermissionRequestButton2(
         }
     }
 }
-
-
 
 /**
  * Simple AlertDialog that displays the given rational state
@@ -494,7 +498,6 @@ interface AudioRecorder2 {
 
 class AndroidAudioRecorder(
     private val context: Context,
-    //private val viewModel: NotasEditorViewModel
 ): AudioRecorder {
 
     private var recorder: MediaRecorder? = null
@@ -507,7 +510,6 @@ class AndroidAudioRecorder(
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun start(outputFile: File): Uri? {
-        //this.outputFile = outputFile
         createRecorder().apply {
             Log.e("Uri",outputFile.toUri().toString())
             setAudioSource(MediaRecorder.AudioSource.MIC)
@@ -639,11 +641,9 @@ fun NotaInputForm(
                 unfocusedContainerColor = MaterialTheme.colorScheme.secondaryContainer,
                 disabledContainerColor = MaterialTheme.colorScheme.secondaryContainer,
             ),
-            //leadingIcon = { Text(Currency.getInstance(Locale.getDefault()).symbol) },
             modifier = Modifier.fillMaxWidth(),
             enabled = enabled,
             singleLine = false
         )
     }
 }
-

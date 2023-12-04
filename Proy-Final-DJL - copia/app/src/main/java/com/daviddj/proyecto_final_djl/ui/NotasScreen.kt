@@ -88,7 +88,7 @@ fun NotasList(
                             value = viewModel.busquedaInput.value,
                             onValueChanged = { viewModel.busquedaInput.value = it },
                             modifier = Modifier
-                                .fillMaxWidth(.7f),
+                                .fillMaxWidth(.925f),
                             keyboardOptions = KeyboardOptions.Default.copy(
                                 keyboardType = KeyboardType.Text,
                                 imeAction = ImeAction.Done

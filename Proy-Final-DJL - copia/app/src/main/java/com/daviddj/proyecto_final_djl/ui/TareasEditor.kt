@@ -198,12 +198,10 @@ fun EditorTareas(
                         .padding(0.dp)
                 )
             }
-            //Spacer(modifier = Modifier.width(10.dp))
             TimePicker(onTimeSelected = {
                 selectedTime = it
                 isTimeSelected = true
             },  isEnabled = isDateSelected)
-            //Spacer(modifier = Modifier.width(10.dp))
             DatePicker(onDateSelected = {
                 selectedDate = it
                 isDateSelected = true
@@ -272,7 +270,10 @@ fun EditorTareas(
                     val uri = ComposeFileProvider.getImageUri(context)
                     imageUri = uri
                     cameraLauncher.launch(uri)
-                }) {
+                },
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(start = 8.dp)) {
                 Image(
                     modifier = Modifier
                         .size(35.dp)
@@ -286,7 +287,10 @@ fun EditorTareas(
                     val uri = ComposeFileProvider.getVideoUri(context)
                     videoUri = uri
                     videoLauncher.launch(uri)
-                } ) {
+                },
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(start = 8.dp)) {
                 Image(
                     modifier = Modifier
                         .size(35.dp)
@@ -295,7 +299,10 @@ fun EditorTareas(
                     contentDescription = null
                 )
             }
-            Button(onClick = { imagePicker.launch("image/*") }) {
+            Button(onClick = { imagePicker.launch("image/*") },
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(start = 8.dp)) {
                 Image(
                     modifier = Modifier
                         .size(35.dp)
@@ -310,12 +317,9 @@ fun EditorTareas(
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                //.animateContentSize(),
-                //verticalArrangement = Arrangement.spacedBy(16.dp),
             ) {
                 // Show rationale dialog when needed
                 rationaleState?.run { PermissionRationaleDialog(rationaleState = this) }
-
                 PermissionRequestButtonTareas(
                     isGranted = recordAudioPermissionState.status.isGranted,
                     title = stringResource(R.string.record_audio),
@@ -395,20 +399,6 @@ fun EditorTareas(
                                     }
                                 }
                             }
-                            // Obtén la descripción actual del ViewModel
-//                            TextField(
-//                                value = viewModel.notaMultimediaUiState.notaMultimediaDetails.descripcion,
-//                                onValueChange = { newDescription ->
-//                                    viewModel.setNotaMultimediaUiState(
-//                                        viewModel.notaMultimediaUiState.copy(
-//                                            notaMultimediaDetails = viewModel.notaMultimediaUiState.notaMultimediaDetails.copy(descripcion = newDescription)
-//                                        )
-//                                    )
-//                                },
-//                                label = { Text("Descripción") },
-//                                modifier = Modifier.fillMaxWidth(),
-//                                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done)
-//                            )
                             Button(
                                 onClick = {
                                     // Elimina la tarjeta y quita la imagen del arreglo.
@@ -418,7 +408,6 @@ fun EditorTareas(
                                 },
                                 modifier = Modifier.align(Alignment.End)
                             ) {
-                                //Text(stringResource(R.string.delete))
                                 Image(
                                     modifier = Modifier
                                         .size(25.dp)
@@ -453,7 +442,10 @@ fun PermissionRequestButtonTareas(
         ){
             Button(onClick = {
                 onClickStGra()
-            }) {
+            },
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(start = 8.dp)) {
                 //Text("Grabar")
                 Image(
                     modifier = Modifier
@@ -469,7 +461,10 @@ fun PermissionRequestButtonTareas(
                 audioUris.plus(audioUri!!)
                 tareasEditorViewModel.audioUris = tareasEditorViewModel.audioUris.plus(audioUri!!)
                 Log.e("URI en boton stop",audioUri.toString())
-            }) {
+            },
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(start = 8.dp)) {
                 Image(
                     modifier = Modifier
                         .size(25.dp)
@@ -550,7 +545,6 @@ fun TareaInputForm(
                 unfocusedContainerColor = MaterialTheme.colorScheme.secondaryContainer,
                 disabledContainerColor = MaterialTheme.colorScheme.secondaryContainer,
             ),
-            //leadingIcon = { Text(Currency.getInstance(Locale.getDefault()).symbol) },
             modifier = Modifier.fillMaxWidth(),
             enabled = enabled,
             singleLine = false
@@ -597,8 +591,6 @@ fun DatePicker(onDateSelected: (String) -> Unit) {
     )
 }
 
-
-
 @Composable
 fun TimePicker(onTimeSelected: (String) -> Unit, isEnabled: Boolean) {
     var hora by rememberSaveable { mutableStateOf("") }
@@ -641,9 +633,7 @@ fun TimePicker(onTimeSelected: (String) -> Unit, isEnabled: Boolean) {
     }
 }
 
-
 //NOTIFICACIONES
-
 class AlarmReceiverPerro : BroadcastReceiver() {
     override fun onReceive(context: Context?, intent: Intent?) {
         val message = intent?.getStringExtra("EXTRA_MESSAGE") ?: return
@@ -668,7 +658,6 @@ class AlarmReceiverPerro : BroadcastReceiver() {
     }
 }
 
-
 data class AlarmItem(
     val alarmTime : LocalDateTime,
     val message : String,
@@ -686,7 +675,6 @@ class AlarmSchedulerImpl(
 ) : AlarmScheduler{
 
     private val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
-    //private val alarmManager = context.getSystemService(AlarmManager::class.java) as AlarmManager
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun schedule(alarmItem: AlarmItem) {
@@ -713,7 +701,6 @@ class AlarmSchedulerImpl(
         )
         Log.e("Alarm", "Alarm set at $combinedDateTime")
     }
-
 
     override fun cancel(alarmItem: AlarmItem) {
         alarmManager.cancel(
