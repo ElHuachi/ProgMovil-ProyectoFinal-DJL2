@@ -365,7 +365,7 @@ fun PermissionRequestButton(
     onClickSpGra: () -> Unit,
     audioUris: List<Uri>,
     notasEditorViewModel: NotasEditorViewModel,
-    function: () -> Unit,
+    onClick: () -> Unit,
 ) {
     if (isGranted) {
         Row(modifier = Modifier
@@ -400,11 +400,11 @@ fun PermissionRequestButton(
                 )
             }
         }
-    }// else {
-//        Button(onClick = onClick) {
-//            Text("Request $title")
-//        }
-//    }
+    } else {
+        Button(onClick = onClick) {
+            Text("Request $title")
+        }
+    }
 }
 
 @Composable
@@ -415,7 +415,7 @@ fun PermissionRequestButton2(
     onClickStRe: () -> Unit,
     onClickSpRe: () -> Unit,
     audioUris: List<Uri>,
-    function: () -> Unit
+    onClick: () -> Unit
 ) {
     if (isGranted) {
         //Spacer(modifier = Modifier.height(4.dp))
@@ -443,11 +443,11 @@ fun PermissionRequestButton2(
                 )
             }
         }
-    }// else {
-//        Button(onClick = onClick) {
-//            Text("Request $title")
-//        }
-//    }
+    } else {
+        Button(onClick = onClick) {
+            Text("Request $title")
+        }
+    }
 }
 
 

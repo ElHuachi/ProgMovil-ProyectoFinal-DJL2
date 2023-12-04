@@ -444,7 +444,7 @@ fun PermissionRequestButtonTareas(
     onClickSpGra: () -> Unit,
     audioUris: List<Uri>,
     tareasEditorViewModel: TareasEditorViewModel,
-    function: () -> Unit,
+    onClick: () -> Unit,
 ) {
     if (isGranted) {
         Row(modifier = Modifier
@@ -479,11 +479,11 @@ fun PermissionRequestButtonTareas(
                 )
             }
         }
-    }// else {
-//        Button(onClick = onClick) {
-//            Text("Request $title")
-//        }
-//    }
+    } else {
+        Button(onClick = onClick) {
+            Text("Request $title")
+        }
+    }
 }
 
 
