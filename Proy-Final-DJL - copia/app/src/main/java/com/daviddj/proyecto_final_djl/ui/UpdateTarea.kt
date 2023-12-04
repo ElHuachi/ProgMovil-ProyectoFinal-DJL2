@@ -325,41 +325,43 @@ fun UpdateTareaScreen(
                     when (index) {
                         0 -> { // Renderiza las imágenes cargadas aquí
                             list.forEach { uri ->
-                                Card(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(8.dp)
-                                ) {
-                                    Column {
-                                        val parsedUri = Uri.parse(uri.toString())
-                                        AsyncImage(
-                                            model = parsedUri,
-                                            modifier = Modifier
-                                                .height(400.dp)
-                                                .fillMaxWidth()
-                                                .align(Alignment.CenterHorizontally),
-                                            contentDescription = "Selected image",
-                                        )
-                                        Spacer(modifier = Modifier.height(16.dp))
-                                        // Agrega el botón aquí
-                                        Button(
-                                            onClick = {
-                                                // Elimina la tarjeta y quita la imagen del arreglo.
-                                                imageUris = imageUris.filter { it != uri }
-                                                videoUris = videoUris.filter { it != uri }
-                                                val u = Uri.parse(uri.toString())
-                                                viewModel.removeUri(u)
-                                            },
-                                            modifier = Modifier.align(Alignment.End)
-                                        ) {
-                                            //Text("Eliminar")
-                                            Image(
+                                if (uri != "") {
+                                    Card(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(8.dp)
+                                    ) {
+                                        Column {
+                                            val parsedUri = Uri.parse(uri.toString())
+                                            AsyncImage(
+                                                model = parsedUri,
                                                 modifier = Modifier
-                                                    .size(25.dp)
-                                                    .padding(2.dp),
-                                                painter = painterResource(R.drawable.eliminar),
-                                                contentDescription = null
+                                                    .height(400.dp)
+                                                    .fillMaxWidth()
+                                                    .align(Alignment.CenterHorizontally),
+                                                contentDescription = "Selected image",
                                             )
+                                            Spacer(modifier = Modifier.height(16.dp))
+                                            // Agrega el botón aquí
+                                            Button(
+                                                onClick = {
+                                                    // Elimina la tarjeta y quita la imagen del arreglo.
+                                                    imageUris = imageUris.filter { it != uri }
+                                                    videoUris = videoUris.filter { it != uri }
+                                                    val u = Uri.parse(uri.toString())
+                                                    viewModel.removeUri(u)
+                                                },
+                                                modifier = Modifier.align(Alignment.End)
+                                            ) {
+                                                //Text("Eliminar")
+                                                Image(
+                                                    modifier = Modifier
+                                                        .size(25.dp)
+                                                        .padding(2.dp),
+                                                    painter = painterResource(R.drawable.eliminar),
+                                                    contentDescription = null
+                                                )
+                                            }
                                         }
                                     }
                                 }
@@ -367,40 +369,42 @@ fun UpdateTareaScreen(
                         }
                         1 -> { // Renderiza los videos cargados aquí
                             list.forEach { uri ->
-                                Card(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(8.dp)
-                                ) {
-                                    Column {
-                                        val parsedUri = Uri.parse(uri.toString())
-                                        VideoPlayer(
-                                            videoUri = parsedUri,
-                                            modifier = Modifier
-                                                .height(400.dp)
-                                                .fillMaxWidth()
-                                                .align(Alignment.CenterHorizontally)
-                                        )
-                                        Spacer(modifier = Modifier.height(16.dp))
-                                        // Agrega el botón aquí
-                                        Button(
-                                            onClick = {
-                                                // Elimina la tarjeta y quita la imagen del arreglo.
-                                                imageUris = imageUris.filter { it != uri }
-                                                videoUris = videoUris.filter { it != uri }
-                                                val u = Uri.parse(uri.toString())
-                                                viewModel.removeUri(u)
-                                            },
-                                            modifier = Modifier.align(Alignment.End)
-                                        ) {
-                                            //Text("Eliminar")
-                                            Image(
+                                if (uri != "") {
+                                    Card(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(8.dp)
+                                    ) {
+                                        Column {
+                                            val parsedUri = Uri.parse(uri.toString())
+                                            VideoPlayer(
+                                                videoUri = parsedUri,
                                                 modifier = Modifier
-                                                    .size(25.dp)
-                                                    .padding(2.dp),
-                                                painter = painterResource(R.drawable.eliminar),
-                                                contentDescription = null
+                                                    .height(400.dp)
+                                                    .fillMaxWidth()
+                                                    .align(Alignment.CenterHorizontally)
                                             )
+                                            Spacer(modifier = Modifier.height(16.dp))
+                                            // Agrega el botón aquí
+                                            Button(
+                                                onClick = {
+                                                    // Elimina la tarjeta y quita la imagen del arreglo.
+                                                    imageUris = imageUris.filter { it != uri }
+                                                    videoUris = videoUris.filter { it != uri }
+                                                    val u = Uri.parse(uri.toString())
+                                                    viewModel.removeUri(u)
+                                                },
+                                                modifier = Modifier.align(Alignment.End)
+                                            ) {
+                                                //Text("Eliminar")
+                                                Image(
+                                                    modifier = Modifier
+                                                        .size(25.dp)
+                                                        .padding(2.dp),
+                                                    painter = painterResource(R.drawable.eliminar),
+                                                    contentDescription = null
+                                                )
+                                            }
                                         }
                                     }
                                 }
@@ -408,61 +412,63 @@ fun UpdateTareaScreen(
                         }
                         2 -> { //AUDIOS
                             list.forEach { uri ->
-                                Card(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(8.dp)
-                                ) {
-                                    Column {
-                                        Row{
-                                            val audioPlayer2 = AndroidAudioPlayer2(context,Uri.parse(uri.toString()))
-                                            PermissionRequestButton2(
-                                                isGranted = recordAudioPermissionState.status.isGranted,
-                                                title = stringResource(R.string.record_audio),
-                                                onClickSpGra,
-                                                onClickStRe,
-                                                onClickStRe = {
-                                                    audioPlayer2.start(Uri.parse(uri.toString()))
-                                                },
-                                                onClickSpRe = {
-                                                    audioPlayer2.stop()
-                                                },
-                                                viewModel.audioUris,
-                                            ){
-                                                if (recordAudioPermissionState.status.shouldShowRationale) {
-                                                    rationaleState = RationaleState(
-                                                        "Permiso para grabar audio",
-                                                        "In order to use this feature please grant access by accepting " + "the grabar audio dialog." + "\n\nWould you like to continue?",
-                                                    ) { proceed ->
-                                                        if (proceed) {
-                                                            recordAudioPermissionState.launchPermissionRequest()
+                                if (uri != "") {
+                                    Card(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(8.dp)
+                                    ) {
+                                        Column {
+                                            Row{
+                                                val audioPlayer2 = AndroidAudioPlayer2(context,Uri.parse(uri.toString()))
+                                                PermissionRequestButton2(
+                                                    isGranted = recordAudioPermissionState.status.isGranted,
+                                                    title = stringResource(R.string.record_audio),
+                                                    onClickSpGra,
+                                                    onClickStRe,
+                                                    onClickStRe = {
+                                                        audioPlayer2.start(Uri.parse(uri.toString()))
+                                                    },
+                                                    onClickSpRe = {
+                                                        audioPlayer2.stop()
+                                                    },
+                                                    viewModel.audioUris,
+                                                ){
+                                                    if (recordAudioPermissionState.status.shouldShowRationale) {
+                                                        rationaleState = RationaleState(
+                                                            "Permiso para grabar audio",
+                                                            "In order to use this feature please grant access by accepting " + "the grabar audio dialog." + "\n\nWould you like to continue?",
+                                                        ) { proceed ->
+                                                            if (proceed) {
+                                                                recordAudioPermissionState.launchPermissionRequest()
+                                                            }
+                                                            rationaleState = null
                                                         }
-                                                        rationaleState = null
+                                                    } else {
+                                                        recordAudioPermissionState.launchPermissionRequest()
                                                     }
-                                                } else {
-                                                    recordAudioPermissionState.launchPermissionRequest()
                                                 }
                                             }
-                                        }
-                                        //Spacer(modifier = Modifier.height(16.dp))
-                                        Button(
-                                            onClick = {
-                                                // Elimina la tarjeta y quita la imagen del arreglo.
-                                                imageUris = imageUris.filter { it != uri }
-                                                videoUris = videoUris.filter { it != uri }
-                                                val u = Uri.parse(uri.toString())
-                                                viewModel.removeUri(u)
-                                            },
-                                            modifier = Modifier.align(Alignment.End)
-                                        ) {
-                                            //Text(stringResource(R.string.delete))
-                                            Image(
-                                                modifier = Modifier
-                                                    .size(25.dp)
-                                                    .padding(2.dp),
-                                                painter = painterResource(R.drawable.eliminar),
-                                                contentDescription = null
-                                            )
+                                            //Spacer(modifier = Modifier.height(16.dp))
+                                            Button(
+                                                onClick = {
+                                                    // Elimina la tarjeta y quita la imagen del arreglo.
+                                                    imageUris = imageUris.filter { it != uri }
+                                                    videoUris = videoUris.filter { it != uri }
+                                                    val u = Uri.parse(uri.toString())
+                                                    viewModel.removeUri(u)
+                                                },
+                                                modifier = Modifier.align(Alignment.End)
+                                            ) {
+                                                //Text(stringResource(R.string.delete))
+                                                Image(
+                                                    modifier = Modifier
+                                                        .size(25.dp)
+                                                        .padding(2.dp),
+                                                    painter = painterResource(R.drawable.eliminar),
+                                                    contentDescription = null
+                                                )
+                                            }
                                         }
                                     }
                                 }
